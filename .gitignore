@@ -1,0 +1,47 @@
+# --- planning documents (kept local, not part of the submission) ---
+RESEARCH.md
+SPEC.md
+SPEC-track1-accrue.md
+
+# --- secrets ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+keystore/
+
+# --- node ---
+node_modules/
+.pnpm-store/
+dist/
+.turbo/
+*.tsbuildinfo
+.next/
+out/
+coverage/
+.eslintcache
+
+# --- foundry ---
+packages/contracts/cache/
+packages/contracts/out/
+packages/contracts/broadcast/**/31337/
+packages/contracts/broadcast/**/dry-run/
+packages/contracts/lcov.info
+
+# --- envio ---
+packages/indexer/generated/
+packages/indexer/.envio/
+packages/indexer/logs/
+
+# --- cre ---
+packages/evaluator/**/*.wasm
+packages/evaluator/**/.cre/
+
+# --- os / editor ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.log

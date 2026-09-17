@@ -1,0 +1,19 @@
+{
+  "name": "accrue",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Yield-bearing ERC-8183 escrow with receivables advances for agent commerce on Monad",
+  "license": "MIT",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm -r --filter './packages/**' build",
+    "test": "pnpm -r --filter './packages/**' test",
+    "contracts:build": "pnpm --filter @accrue/contracts build",
+    "contracts:test": "pnpm --filter @accrue/contracts test",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@accrue/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Accrue smart contracts: yield-bearing ERC-8183 escrow, SLA hooks, advance pool, CRE evaluator",
+  "license": "MIT",
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test -vv",
+    "test:gas": "forge test --gas-report",
+    "coverage": "forge coverage --report lcov",
+    "fmt": "forge fmt",
+    "lint": "forge fmt --check",
+    "abi:export": "node scripts/export-abis.mjs"
+  }
+}
