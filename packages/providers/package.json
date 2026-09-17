@@ -1,0 +1,31 @@
+{
+  "name": "@accrue/providers",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Demo ERC-8004 provider agents for Accrue: report (slow job), flaky (adversarial), pricefeed (x402 + MPP sync API backed by Kuru)",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "agent": "tsx src/agent.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@accrue/sdk": "workspace:*",
+    "@hono/node-server": "^1.19.0",
+    "@monad-crypto/mpp": "^0.0.3",
+    "@x402/core": "^2.26.0",
+    "@x402/evm": "^2.26.0",
+    "@x402/hono": "^2.26.0",
+    "hono": "^4.13.8",
+    "mppx": "^0.10.1",
+    "viem": "^2.56.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

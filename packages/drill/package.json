@@ -1,0 +1,27 @@
+{
+  "name": "@accrue/drill",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Adversarial and throughput drills for Accrue on Monad; results are committed to docs/drill",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "d1": "tsx src/d1-stale.ts",
+    "d2": "tsx src/d2-ontime.ts",
+    "d3": "tsx src/d3-advance-reject.ts",
+    "d4": "tsx src/d4-evaluator-attack.ts",
+    "d5": "tsx src/d5-throughput.ts",
+    "d6": "tsx src/d6-hostile-llm.ts",
+    "all": "tsx src/d1-stale.ts && tsx src/d2-ontime.ts && tsx src/d3-advance-reject.ts && tsx src/d4-evaluator-attack.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@accrue/sdk": "workspace:*",
+    "viem": "^2.56.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

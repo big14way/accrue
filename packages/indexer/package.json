@@ -1,0 +1,22 @@
+{
+  "name": "@accrue/indexer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Envio HyperIndex for Accrue on Monad: jobs, SLA outcomes, yield per job, pool utilisation, credit history, attestations",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "codegen": "envio codegen",
+    "dev": "envio dev",
+    "start": "envio start",
+    "stop": "envio stop",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "envio": "^3.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "typescript": "^5.9.3"
+  }
+}

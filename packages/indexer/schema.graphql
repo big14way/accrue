@@ -1,0 +1,155 @@
+type Job @entity {
+  id: ID!                       # jobId
+  chainId: Int!
+  client: String!
+  provider: String!
+  providerAgentId: BigInt!
+  evaluator: String!
+  hook: String!
+  status: String!               # Open | Funded | Submitted | Completed | Rejected | Expired
+  budget: BigInt!
+  token: String
+  expiredAt: BigInt!
+  deadline: BigInt
+  minFreshnessBlock: BigInt
+  deliverableURI: String
+  deliverableCommitment: String
+  deliverable: String
+  freshnessBlock: BigInt
+  submittedAt: BigInt
+  yieldToClientBps: Int!
+  yieldToProviderBps: Int!
+  yieldToProtocolBps: Int!
+  vaultShares: BigInt
+  principalPaid: BigInt
+  yieldRealised: BigInt
+  yieldToClient: BigInt
+  yieldToProvider: BigInt
+  yieldToProtocol: BigInt
+  refunded: BigInt
+  paidTo: String
+  payoutReceiver: String
+  payoutLocked: Boolean!
+  verdictOk: Boolean
+  verdictReason: String
+  verdictSource: String         # CRE | Committee | Deadline
+  createdAt: BigInt!
+  createdTx: String!
+  fundedAt: BigInt
+  settledAt: BigInt
+  settledTx: String
+  lien: Lien
+  events: [JobEvent!]! @derivedFrom(field: "job")
+}
+
+type JobEvent @entity {
+  id: ID!                       # txHash-logIndex
+  job: Job!
+  kind: String!
+  actor: String
+  amount: BigInt
+  detail: String
+  txHash: String!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+}
+
+type Lien @entity {
+  id: ID!                       # jobId
+  job: Job!
+  provider: String!
+  principal: BigInt!
+  bond: BigInt!
+  rateWadPerBlock: BigInt!
+  maxAdvanceBps: Int!
+  openedAt: BigInt!
+  openedBlock: BigInt!
+  closedAt: BigInt
+  outcome: String               # open | repaid | defaulted
+  interestRealised: BigInt
+  seizedBond: BigInt
+  principalShortfall: BigInt
+  forwarded: BigInt
+}
+
+type Provider @entity {
+  id: ID!                       # address
+  agentId: BigInt!
+  jobs: Int!
+  completed: Int!
+  onTime: Int!
+  late: Int!
+  rejected: Int!
+  advances: Int!
+  repaid: Int!
+  defaults: Int!
+  earned: BigInt!
+  yieldBonus: BigInt!
+  lastSeenAt: BigInt!
+}
+
+type Attestation @entity {
+  id: ID!                       # txHash-logIndex
+  job: Job!
+  ok: Boolean!
+  reason: String!
+  source: String!               # CRE | Committee
+  deliverable: String!
+  member: String
+  workflowId: String
+  workflowOwner: String
+  txHash: String!
+  timestamp: BigInt!
+}
+
+type PoolSnapshot @entity {
+  id: ID!                       # txHash-logIndex
+  kind: String!                 # deposit | withdraw | advance | repaid | defaulted
+  actor: String!
+  assets: BigInt!
+  shares: BigInt
+  outstandingDelta: BigInt!
+  interestDelta: BigInt!
+  shortfallDelta: BigInt!
+  txHash: String!
+  timestamp: BigInt!
+}
+
+type PoolStats @entity {
+  id: ID!                       # "pool"
+  deposits: BigInt!
+  withdrawals: BigInt!
+  outstandingPrincipal: BigInt!
+  realisedInterest: BigInt!
+  totalShortfall: BigInt!
+  advances: Int!
+  repaid: Int!
+  defaults: Int!
+  updatedAt: BigInt!
+}
+
+type GlobalStats @entity {
+  id: ID!                       # "global"
+  jobs: Int!
+  funded: Int!
+  completed: Int!
+  rejected: Int!
+  expired: Int!
+  volumeFunded: BigInt!
+  yieldRealised: BigInt!
+  refunds: BigInt!
+  attestationsCRE: Int!
+  attestationsCommittee: Int!
+  updatedAt: BigInt!
+}
+
+type Feedback @entity {
+  id: ID!
+  job: Job!
+  agentId: BigInt!
+  value: BigInt!
+  tag2: String!
+  skipped: Boolean!
+  txHash: String!
+  timestamp: BigInt!
+}

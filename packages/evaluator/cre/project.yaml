@@ -1,0 +1,9 @@
+# Chainlink CRE project settings. Chain names per the CRE Forwarder Directory.
+staging-settings:
+  rpcs:
+    - chain-name: monad-testnet
+      url: https://testnet-rpc.monad.xyz
+production-settings:
+  rpcs:
+    - chain-name: monad-mainnet
+      url: https://rpc.monad.xyz

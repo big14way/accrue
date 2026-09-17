@@ -1,0 +1,25 @@
+{
+  "name": "@accrue/evaluator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Accrue evaluator: Chainlink CRE workflow (primary) and committee daemon (fallback) that verify ERC-8183 deliverables and finalise jobs on chain",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "daemon": "tsx src/daemon.ts",
+    "verify": "tsx src/verify.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "cre:simulate": "cd cre && cre workflow simulate accrue-evaluator --target staging-settings",
+    "cre:broadcast": "cd cre && cre workflow simulate accrue-evaluator --target staging-settings --broadcast"
+  },
+  "dependencies": {
+    "@accrue/sdk": "workspace:*",
+    "@chainlink/cre-sdk": "^1.21.1",
+    "viem": "^2.56.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

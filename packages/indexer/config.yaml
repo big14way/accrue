@@ -1,0 +1,64 @@
+# Envio HyperIndex — Accrue on Monad testnet.
+# Addresses come from docs/deployments/monad-testnet.json; `pnpm sync` rewrites them after a deploy.
+name: accrue
+description: Yield-bearing ERC-8183 escrow, SLA outcomes, advance pool and ERC-8004 credit history on Monad
+rollback_on_reorg: false
+field_selection:
+  transaction_fields:
+    - hash
+    - from
+chains:
+  - id: 10143
+    start_block: 0
+    contracts:
+      - name: AccrueEscrow
+        address: "0x0000000000000000000000000000000000000000"
+        handler: src/EventHandlers.ts
+        events:
+          - event: JobCreated(uint256 indexed jobId, address indexed client, address indexed provider, address evaluator, uint48 expiredAt, address hook)
+          - event: ProviderSet(uint256 indexed jobId, address indexed provider, uint256 agentId)
+          - event: BudgetSet(uint256 indexed jobId, address indexed token, uint256 amount)
+          - event: JobFunded(uint256 indexed jobId, address indexed client, uint256 amount)
+          - event: YieldDeposited(uint256 indexed jobId, address indexed vault, uint256 assets, uint256 shares)
+          - event: JobSubmitted(uint256 indexed jobId, address indexed provider, bytes32 deliverable)
+          - event: JobCompleted(uint256 indexed jobId, address indexed evaluator, bytes32 reason)
+          - event: JobRejected(uint256 indexed jobId, address indexed rejector, bytes32 reason)
+          - event: JobExpired(uint256 indexed jobId)
+          - event: YieldRealised(uint256 indexed jobId, uint256 principal, uint256 yieldAmount, uint256 toClient, uint256 toProvider, uint256 toProtocol)
+          - event: PaymentReleased(uint256 indexed jobId, address indexed recipient, uint256 amount)
+          - event: Refunded(uint256 indexed jobId, address indexed client, uint256 amount)
+          - event: YieldPolicySet(uint256 indexed jobId, uint16 toClientBps, uint16 toProviderBps, uint16 toProtocolBps)
+          - event: PayoutReceiverSet(uint256 indexed jobId, address indexed payoutReceiver)
+          - event: PayoutReceiverLocked(uint256 indexed jobId, address indexed locker)
+          - event: VaultShortfall(uint256 indexed jobId, uint256 expected, uint256 received)
+      - name: SLAHook
+        address: "0x0000000000000000000000000000000000000000"
+        handler: src/EventHandlers.ts
+        events:
+          - event: TermsCommitted(uint256 indexed jobId, uint48 deadline, uint64 minFreshnessBlock, bytes32 deliverableCommitment, string deliverableURI)
+          - event: SubmissionAccepted(uint256 indexed jobId, bytes32 deliverable, uint64 freshnessBlock, uint48 submittedAt)
+      - name: Evaluator
+        address: "0x0000000000000000000000000000000000000000"
+        handler: src/EventHandlers.ts
+        events:
+          - event: Attested(uint256 indexed jobId, bytes32 indexed deliverable, bool ok, bytes32 reason, uint8 source)
+          - event: Vote(uint256 indexed jobId, address indexed member, bytes32 verdictHash, uint8 count)
+          - event: DeadlineEnforced(uint256 indexed jobId, uint48 deadline)
+          - event: ReportReceived(bytes32 workflowId, address workflowOwner, uint256 indexed jobId)
+      - name: AdvancePool
+        address: "0x0000000000000000000000000000000000000000"
+        handler: src/EventHandlers.ts
+        events:
+          - event: Advanced(uint256 indexed jobId, address indexed provider, uint256 amount, uint256 bond, uint256 rateWadPerBlock, uint256 maxAdvanceBps)
+          - event: Repaid(uint256 indexed jobId, address indexed provider, uint256 principal, uint256 interest, uint256 forwarded)
+          - event: Defaulted(uint256 indexed jobId, address indexed provider, uint256 principal, uint256 interestDue, uint256 seizedBond, uint256 principalShortfall)
+          - event: Forwarded(uint256 indexed jobId, address indexed provider, uint256 amount)
+          - event: CreditFeedback(uint256 indexed jobId, uint256 indexed agentId, string tag2)
+          - event: Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)
+          - event: Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)
+      - name: ReputationHook
+        address: "0x0000000000000000000000000000000000000000"
+        handler: src/EventHandlers.ts
+        events:
+          - event: FeedbackWritten(uint256 indexed jobId, uint256 indexed agentId, int128 value, string tag2)
+          - event: FeedbackSkipped(uint256 indexed jobId, uint256 indexed agentId, bytes reason)
