@@ -61,15 +61,33 @@ abstract contract BaseTest is Test {
         identity = new MockIdentityRegistry();
         reputation = new MockReputationRegistry(address(identity));
 
-        // Hooks trust the router that will be deployed two nonces later.
-        address predictedRouter = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 2);
-        sla = new SLAHook(address(escrow), predictedRouter);
-        rep = new ReputationHook(address(escrow), predictedRouter, address(reputation), address(sla));
+        // Deployment order (nonces): sla n, rep n+1, router n+2, creds n+3, compliance n+4,
+        // compliantRouter n+5. Hooks trust routers that do not exist yet, so their addresses
+        // are predicted from the deployer nonce.
+        uint64 n = vm.getNonce(address(this));
+        address predictedRouter = vm.computeCreateAddress(address(this), n + 2);
+        address predictedCompliantRouter = vm.computeCreateAddress(address(this), n + 5);
+        address[] memory both = new address[](2);
+        both[0] = predictedRouter;
+        both[1] = predictedCompliantRouter;
+        sla = new SLAHook(address(escrow), both);
+        rep = new ReputationHook(address(escrow), both, address(reputation), address(sla));
         address[] memory hooks = new address[](2);
         hooks[0] = address(sla);
         hooks[1] = address(rep);
         router = new HookRouter(address(escrow), hooks);
         assertEq(address(router), predictedRouter, "router address prediction");
+
+        creds = new CredentialRegistry(issuer);
+        address[] memory onlyCompliant = new address[](1);
+        onlyCompliant[0] = predictedCompliantRouter;
+        compliance = new ComplianceHook(address(escrow), onlyCompliant, address(creds), 1);
+        address[] memory chooks = new address[](3);
+        chooks[0] = address(compliance);
+        chooks[1] = address(sla);
+        chooks[2] = address(rep);
+        compliantRouter = new HookRouter(address(escrow), chooks);
+        assertEq(address(compliantRouter), predictedCompliantRouter, "compliant router prediction");
 
         address[] memory members = new address[](2);
         members[0] = attestor1;
@@ -82,19 +100,6 @@ abstract contract BaseTest is Test {
             address(escrow), address(scorer), address(reputation), 1_000_000 * USD, "Accrue Advance USD", "aUSD"
         );
         assertEq(address(pool), predictedPool, "pool address prediction");
-
-        creds = new CredentialRegistry(issuer);
-        address predictedCompliantRouter = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
-        compliance = new ComplianceHook(address(escrow), predictedCompliantRouter, address(creds), 1);
-        address[] memory chooks = new address[](2);
-        chooks[0] = address(compliance);
-        chooks[1] = address(sla);
-        // SLAHook trusts `router` only, so this router is used for compliance-only tests via a
-        // dedicated SLA-less path; see ComplianceHook tests.
-        chooks = new address[](1);
-        chooks[0] = address(compliance);
-        compliantRouter = new HookRouter(address(escrow), chooks);
-        assertEq(address(compliantRouter), predictedCompliantRouter);
 
         // Balances
         usdc.mint(client, 1_000_000 * USD);

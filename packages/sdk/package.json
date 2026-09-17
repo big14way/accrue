@@ -1,0 +1,36 @@
+{
+  "name": "@accrue/sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK, CLI and MCP server for Accrue: yield-bearing ERC-8183 escrow with receivables advances on Monad",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./abis": { "types": "./dist/abis/index.d.ts", "import": "./dist/abis/index.js" }
+  },
+  "bin": {
+    "accrue": "./dist/cli.js",
+    "accrue-mcp": "./dist/mcp.js"
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --test --import tsx dist/../src/**/*.test.ts",
+    "cli": "tsx src/cli.ts",
+    "mcp": "tsx src/mcp.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "viem": "^2.56.7",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

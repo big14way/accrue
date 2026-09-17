@@ -12,8 +12,13 @@ contract ComplianceHookTest is BaseTest {
         creds.issue(who, tier, exp);
     }
 
+    function _compliantJob(uint256 budget) internal returns (uint256 id) {
+        id = _createJob(address(compliantRouter), budget);
+        _commitTerms(id, uint48(block.timestamp + 1 hours), 0);
+    }
+
     function test_fund_requiresBothPartiesVerified() public {
-        uint256 id = _createJob(address(compliantRouter), 100 * USD);
+        uint256 id = _compliantJob(100 * USD);
         vm.prank(client);
         vm.expectRevert(abi.encodeWithSelector(ComplianceHook.NotVerified.selector, client, 1));
         escrow.fund(id, address(usdc), 100 * USD, "");
@@ -29,10 +34,10 @@ contract ComplianceHookTest is BaseTest {
     function test_complete_requiresProviderStillVerified() public {
         _issue(client, 1, 0);
         _issue(provider, 1, 0);
-        uint256 id = _createJob(address(compliantRouter), 100 * USD);
+        uint256 id = _compliantJob(100 * USD);
         _fund(id);
         vm.prank(provider);
-        escrow.submit(id, keccak256("d"), "");
+        escrow.submit(id, keccak256("d"), abi.encode(uint64(block.number)));
         vm.prank(issuer);
         creds.revoke(provider);
         vm.prank(address(evaluator));
@@ -44,10 +49,25 @@ contract ComplianceHookTest is BaseTest {
         assertEq(uint8(_status(id)), uint8(IERC8183.JobStatus.Rejected));
     }
 
+    function test_compliantRouterAlsoWritesReputation() public {
+        _issue(client, 1, 0);
+        _issue(provider, 1, 0);
+        uint256 id = _compliantJob(100 * USD);
+        _fund(id);
+        vm.prank(provider);
+        escrow.submit(id, keccak256("d"), abi.encode(uint64(block.number)));
+        vm.prank(address(evaluator));
+        escrow.complete(id, "ok", "");
+        address[] memory clients = new address[](1);
+        clients[0] = address(rep);
+        (uint64 c,,) = reputation.getSummary(providerAgentId, clients, "accrue:sla", "on-time");
+        assertEq(c, 1, "one ReputationHook serves both routers");
+    }
+
     function test_expiredCredentialFails() public {
         _issue(client, 1, uint48(block.timestamp + 10));
         _issue(provider, 1, 0);
-        uint256 id = _createJob(address(compliantRouter), 100 * USD);
+        uint256 id = _compliantJob(100 * USD);
         vm.warp(block.timestamp + 10);
         vm.prank(client);
         vm.expectRevert(abi.encodeWithSelector(ComplianceHook.NotVerified.selector, client, 1));

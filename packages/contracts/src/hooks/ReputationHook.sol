@@ -33,8 +33,8 @@ contract ReputationHook is BaseHook {
     event FeedbackWritten(uint256 indexed jobId, uint256 indexed agentId, int128 value, string tag2);
     event FeedbackSkipped(uint256 indexed jobId, uint256 indexed agentId, bytes reason);
 
-    constructor(address escrow_, address trustedCaller_, address reputation_, address slaHook_)
-        BaseHook(escrow_, trustedCaller_)
+    constructor(address escrow_, address[] memory trustedCallers_, address reputation_, address slaHook_)
+        BaseHook(escrow_, trustedCallers_)
     {
         reputation = IERC8004ReputationRegistry(reputation_);
         slaHook = SLAHook(slaHook_);

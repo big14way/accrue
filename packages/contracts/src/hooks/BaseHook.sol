@@ -11,18 +11,29 @@ import {IAccrueEscrow} from "../interfaces/IAccrueEscrow.sol";
 ///         they trust (the escrow itself or a HookRouter in front of it), and selector routing.
 abstract contract BaseHook is IERC8183Hook, ERC165 {
     IAccrueEscrow public immutable escrow;
-    /// @notice The only address allowed to invoke callbacks (escrow or router).
-    address public immutable trustedCaller;
+    /// @notice Addresses allowed to invoke callbacks: the escrow itself and/or HookRouters.
+    ///         Fixed at construction; there is no way to add callers later.
+    mapping(address => bool) public isTrustedCaller;
+    address[] internal _trustedCallers;
 
     error NotTrustedCaller();
+    error NoTrustedCallers();
 
-    constructor(address escrow_, address trustedCaller_) {
+    constructor(address escrow_, address[] memory trustedCallers_) {
         escrow = IAccrueEscrow(escrow_);
-        trustedCaller = trustedCaller_ == address(0) ? escrow_ : trustedCaller_;
+        if (trustedCallers_.length == 0) revert NoTrustedCallers();
+        for (uint256 i = 0; i < trustedCallers_.length; i++) {
+            isTrustedCaller[trustedCallers_[i]] = true;
+            _trustedCallers.push(trustedCallers_[i]);
+        }
+    }
+
+    function trustedCallers() external view returns (address[] memory) {
+        return _trustedCallers;
     }
 
     modifier onlyTrusted() {
-        if (msg.sender != trustedCaller) revert NotTrustedCaller();
+        if (!isTrustedCaller[msg.sender]) revert NotTrustedCaller();
         _;
     }
 

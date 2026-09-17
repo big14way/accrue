@@ -52,7 +52,7 @@ contract SLAHook is BaseHook {
     error StaleData(uint64 committedMinBlock, uint64 deliveredBlock);
     error FutureBlock(uint64 deliveredBlock, uint256 currentBlock);
 
-    constructor(address escrow_, address trustedCaller_) BaseHook(escrow_, trustedCaller_) {}
+    constructor(address escrow_, address[] memory trustedCallers_) BaseHook(escrow_, trustedCallers_) {}
 
     // ───────────────────────────── Client commits terms ─────────────────────────────
 

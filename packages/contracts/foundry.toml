@@ -11,7 +11,7 @@ optimizer_runs = 200
 via_ir = true
 bytecode_hash = "none"
 cbor_metadata = false
-fs_permissions = [{ access = "read-write", path = "./" }]
+fs_permissions = [{ access = "read-write", path = "./" }, { access = "read-write", path = "../../docs/deployments" }]
 gas_reports = ["AccrueEscrow", "AdvancePool", "SLAHook", "ReputationHook", "Evaluator", "HookRouter"]
 
 remappings = [

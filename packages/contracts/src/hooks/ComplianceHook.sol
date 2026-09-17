@@ -18,8 +18,8 @@ contract ComplianceHook is BaseHook {
 
     error NotVerified(address subject, uint8 requiredTier);
 
-    constructor(address escrow_, address trustedCaller_, address verifier_, uint8 requiredTier_)
-        BaseHook(escrow_, trustedCaller_)
+    constructor(address escrow_, address[] memory trustedCallers_, address verifier_, uint8 requiredTier_)
+        BaseHook(escrow_, trustedCallers_)
     {
         verifier = ICredentialVerifier(verifier_);
         requiredTier = requiredTier_;
