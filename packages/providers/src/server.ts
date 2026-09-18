@@ -24,7 +24,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { keccak256, stringToBytes } from "viem";
 
 import { canonicalize } from "./canonical.js";
-import { findMarket, l2Book, midFromBook } from "./kuru.js";
+import { findMarket, quote } from "./kuru.js";
 import { buildDeliverable, flakyMode } from "./deliverables.js";
 
 const PORT = Number(process.env.PROVIDERS_PORT ?? 4020);
@@ -89,9 +89,8 @@ app.get("/pricefeed/mpp/mid", async (c) => {
 async function priceBody(pair: string) {
   const m = await findMarket(pair);
   if (!m) return { pair, error: "market not found on Kuru" };
-  const book = await l2Book(m.market);
-  const { mid, bestBid, bestAsk } = midFromBook(book);
-  return { pair, market: m.market, source: "kuru", syncBlock: book.syncBlock, bestBid, bestAsk, mid, at: new Date().toISOString() };
+  const q = await quote(m);
+  return { pair: `${m.baseTicker}/${m.quoteTicker}`, market: m.market, base: m.base, quote: m.quote, ...q, at: new Date().toISOString() };
 }
 
 app.get("/pricefeed/mid", async (c) => c.json(await priceBody(c.req.query("pair") ?? "MON/USDC")));

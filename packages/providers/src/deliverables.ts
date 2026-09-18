@@ -1,4 +1,4 @@
-import { findMarket, l2Book, midFromBook } from "./kuru.js";
+
 
 export type FlakyMode = "ok" | "stale" | "mismatch" | "late";
 
@@ -37,12 +37,5 @@ export async function buildDeliverable(i: DeliverableInput): Promise<Record<stri
     // Serves a different body than the hash it submitted on chain (see agent.ts).
     body.ticks = ticks.map((t) => ({ ...t, price: t.price * 2 }));
   }
-  try {
-    const m = await findMarket("MON/USDC");
-    if (m) body.liveMidAtGeneration = midFromBook(await l2Book(m.market)).mid ?? null;
-  } catch {
-    body.liveMidAtGeneration = null;
-  }
-  delete body.liveMidAtGeneration; // keep body deterministic; header carries live data if needed
-  return body;
+  return body; // deterministic in (jobId, freshnessBlock): any party can re-derive and re-hash it
 }
