@@ -99,6 +99,12 @@ export class Report {
   }
 }
 
+/** A failed step ends the drill with a one-line reason instead of a stack dump. */
+process.on("unhandledRejection", (e: any) => {
+  console.error(`\ndrill aborted: ${e?.sentence ?? e?.shortMessage ?? e?.message ?? e}`);
+  process.exit(1);
+});
+
 export { hashDeliverable, parseUsd, formatUsd };
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export const now = () => Math.floor(Date.now() / 1000);

@@ -1,7 +1,20 @@
 import { type Abi, BaseError, ContractFunctionRevertedError, decodeErrorResult, formatUnits } from "viem";
 import { accrueEscrowAbi, sLAHookAbi, evaluatorAbi, advancePoolAbi, complianceHookAbi, hookRouterAbi } from "./abis/index.js";
 
+/** OpenZeppelin ERC-20 / ERC-4626 custom errors, so token failures read as sentences too. */
+const erc20Errors = [
+  { type: "error", name: "ERC20InsufficientBalance", inputs: [{ name: "sender", type: "address" }, { name: "balance", type: "uint256" }, { name: "needed", type: "uint256" }] },
+  { type: "error", name: "ERC20InsufficientAllowance", inputs: [{ name: "spender", type: "address" }, { name: "allowance", type: "uint256" }, { name: "needed", type: "uint256" }] },
+  { type: "error", name: "ERC20InvalidSender", inputs: [{ name: "sender", type: "address" }] },
+  { type: "error", name: "ERC20InvalidReceiver", inputs: [{ name: "receiver", type: "address" }] },
+  { type: "error", name: "ERC4626ExceededMaxWithdraw", inputs: [{ name: "owner", type: "address" }, { name: "assets", type: "uint256" }, { name: "max", type: "uint256" }] },
+  { type: "error", name: "ERC4626ExceededMaxRedeem", inputs: [{ name: "owner", type: "address" }, { name: "shares", type: "uint256" }, { name: "max", type: "uint256" }] },
+  { type: "error", name: "ReentrancyGuardReentrantCall", inputs: [] },
+  { type: "error", name: "InsufficientGas", inputs: [{ name: "have", type: "uint256" }, { name: "need", type: "uint256" }] },
+] as const;
+
 export const ALL_ERROR_ABIS: Abi = [
+  ...erc20Errors,
   ...accrueEscrowAbi,
   ...sLAHookAbi,
   ...evaluatorAbi,
@@ -62,6 +75,13 @@ const SENTENCES: Record<string, (args: readonly unknown[], decimals: number) => 
   ZeroAmount: () => "Amount must be greater than zero.",
   // Compliance
   NotVerified: (a) => `${a[0]} does not hold a valid tier-${a[1]} credential.`,
+  // Tokens / pool shares
+  ERC20InsufficientBalance: (a, d) => `${a[0]} holds ${fmt(a[1], d)} but ${fmt(a[2], d)} is needed.`,
+  ERC20InsufficientAllowance: (a, d) => `Allowance for ${a[0]} is ${fmt(a[1], d)}; ${fmt(a[2], d)} is needed. Approve first.`,
+  ERC4626ExceededMaxWithdraw: (a, d) => `Only ${fmt(a[2], d)} can be withdrawn right now (pool cash); ${fmt(a[1], d)} requested.`,
+  ERC4626ExceededMaxRedeem: (a) => `Only ${a[2]} shares can be redeemed right now; ${a[1]} requested.`,
+  ReentrancyGuardReentrantCall: () => "Re-entrant call blocked.",
+  InsufficientGas: (a) => `Not enough gas for a protected inner call: ${a[0]} available, ${a[1]} required. Raise the gas limit.`,
 };
 
 function ts(v: unknown): string {
@@ -101,6 +121,11 @@ export function explainRevert(errOrData: unknown, decimals = 6): ExplainedError 
       return { name, args, sentence: f ? f(args, decimals) : `${name}(${args.map(String).join(", ")})` };
     }
     data = revert?.raw;
+    if (!data) {
+      // viem could not decode against the contract ABI: recover the raw bytes from the message.
+      const m = /custom error (0x[0-9a-f]{8}):\s*([0-9a-f]*)/i.exec(errOrData.message);
+      if (m) data = `${m[1]}${m[2] ?? ""}` as `0x${string}`;
+    }
   }
   if (!data) return undefined;
   try {
