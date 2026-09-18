@@ -1,0 +1,32 @@
+{
+  "name": "@accrue/console",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Accrue console: post jobs, watch yield accrue, take advances, read the pool \u2014 every number from chain or Envio",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "next lint",
+    "sync": "node scripts/sync-deployment.mjs",
+    "prebuild": "node scripts/sync-deployment.mjs || true"
+  },
+  "dependencies": {
+    "@accrue/sdk": "workspace:*",
+    "@privy-io/react-auth": "^3.43.0",
+    "@privy-io/wagmi": "^2.0.0",
+    "@tanstack/react-query": "^5.90.0",
+    "next": "^16.3.5",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "viem": "^2.56.7",
+    "wagmi": "^3.7.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,49 @@
+:root {
+  --bg: #0b0d10; --panel: #12151a; --panel-2: #181c23; --line: #242a33; --text: #e6e9ee; --muted: #8b95a5;
+  --accent: #7ee2b8; --accent-2: #5cc8ff; --warn: #ffcc66; --bad: #ff6b6b;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif; }
+a { color: var(--accent-2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.num, code, .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px 48px; }
+header.top { display: flex; align-items: center; gap: 20px; padding: 14px 0; border-bottom: 1px solid var(--line); margin-bottom: 20px; flex-wrap: wrap; }
+header.top .brand { font-weight: 700; letter-spacing: .04em; color: var(--accent); font-size: 16px; }
+header.top nav a { color: var(--muted); margin-right: 14px; }
+header.top nav a:hover { color: var(--text); text-decoration: none; }
+header.top .spacer { flex: 1; }
+.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.grid.two { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.panel h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+.kpi { font-size: 26px; font-weight: 600; }
+.kpi small { font-size: 12px; color: var(--muted); font-weight: 400; margin-left: 6px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+tr:hover td { background: var(--panel-2); }
+.pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; border: 1px solid var(--line); color: var(--muted); }
+.pill.Funded, .pill.Submitted { color: var(--accent-2); border-color: var(--accent-2); }
+.pill.Completed { color: var(--accent); border-color: var(--accent); }
+.pill.Rejected, .pill.Expired { color: var(--bad); border-color: var(--bad); }
+.pill.Open { color: var(--warn); border-color: var(--warn); }
+.bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.bar > span { display: block; height: 100%; background: var(--accent); }
+.muted { color: var(--muted); } .bad { color: var(--bad); } .good { color: var(--accent); } .warn { color: var(--warn); }
+button, .btn { background: var(--accent); color: #05110c; border: 0; border-radius: 8px; padding: 9px 14px; font-weight: 600; cursor: pointer; font-size: 13px; }
+button.secondary { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+input, select { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; width: 100%; }
+label { display: block; font-size: 12px; color: var(--muted); margin: 10px 0 4px; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.stack > * + * { margin-top: 14px; }
+.timeline { list-style: none; padding: 0; margin: 0; }
+.timeline li { display: grid; grid-template-columns: 160px 1fr; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.timeline li .k { color: var(--muted); font-size: 12px; }
+.log { background: #0a0c0f; border: 1px solid var(--line); border-radius: 8px; padding: 10px; font-family: var(--mono); font-size: 12px; white-space: pre-wrap; max-height: 360px; overflow: auto; }
+.hint { font-size: 12px; color: var(--muted); }
+h1 { font-size: 20px; margin: 0 0 14px; } h2 { font-size: 16px; margin: 18px 0 10px; }
+.formula { font-family: var(--mono); font-size: 12px; color: var(--muted); white-space: pre-wrap; }
+@media (max-width: 640px) { .timeline li { grid-template-columns: 1fr; } .kpi { font-size: 20px; } th:nth-child(n+5), td:nth-child(n+5) { display: none; } }
