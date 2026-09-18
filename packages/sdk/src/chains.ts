@@ -1,16 +1,21 @@
-import { monad, monadTestnet } from "viem/chains";
+import { monad, monadTestnet, anvil } from "viem/chains";
 import type { Address, Chain } from "viem";
 
 export { monad, monadTestnet };
 
+/** Local Anvil for end-to-end runs (port 8546 so it never collides with a default node). */
+export const anvilLocal: Chain = { ...anvil, rpcUrls: { default: { http: ["http://127.0.0.1:8546"] } } };
+
 export const CHAINS: Record<number, Chain> = {
   [monadTestnet.id]: monadTestnet,
   [monad.id]: monad,
+  [anvilLocal.id]: anvilLocal,
 };
 
 export const EXPLORERS: Record<number, string> = {
   [monadTestnet.id]: "https://testnet.monadexplorer.com",
   [monad.id]: "https://monadvision.com",
+  [anvilLocal.id]: "http://127.0.0.1:8546/#",
 };
 
 export const DEFAULT_RPC: Record<number, string> = {
@@ -27,6 +32,7 @@ export const RPC_FALLBACKS: Record<number, string[]> = {
     "https://rpc.ankr.com/monad_testnet",
   ],
   [monad.id]: ["https://rpc.monad.xyz", "https://monad.drpc.org", "https://rpc.ankr.com/monad"],
+  [anvilLocal.id]: ["http://127.0.0.1:8546"],
 };
 
 /** ERC-8004 registries (CREATE2 vanity addresses, verified on both networks). */

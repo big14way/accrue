@@ -46,3 +46,7 @@ Thumbs.db
 !.vscode/extensions.json
 *.log
 .keys/
+
+# local-only deployments
+docs/deployments/anvil.json
+docs/deployments/local-*.json

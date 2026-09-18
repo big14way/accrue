@@ -50,9 +50,13 @@ async function main() {
   const key = (values.key ?? process.env.ACCRUE_PRIVATE_KEY) as Hex | undefined;
   const a = new Accrue({ deployment, account: key, rpcUrl: process.env.MONAD_RPC });
   const token = await a.tokenInfo();
-  const [group, cmd, ...rest] = positionals;
+  const [group, cmd, ...restRaw] = positionals;
+  const grouped = ["job", "advance", "pool", "agent", "vault"].includes(group);
+  const command = grouped ? `${group} ${cmd ?? ""}`.trim() : group;
+  // Single-word commands take their arguments starting at `cmd`.
+  const rest = grouped ? restRaw : [cmd, ...restRaw];
 
-  switch (`${group} ${cmd ?? ""}`.trim()) {
+  switch (command) {
     case "job create": {
       const now = Math.floor(Date.now() / 1000);
       const bonus = Number(values["bonus-bps"] ?? 0);
@@ -127,7 +131,7 @@ async function main() {
       out(await a.registerAgent(rest[0]));
       break;
     case "explain":
-      out(await a.explainTx(cmd as Hex));
+      out(await a.explainTx(rest[0] as Hex));
       break;
     case "mint":
       out(await a.mintTestUsd(rest[0] as `0x${string}`, parseUsd(rest[1], token.decimals)));
