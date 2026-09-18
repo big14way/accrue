@@ -7,7 +7,13 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "lib": ["ES2022"]
+    "lib": [
+      "ES2022"
+    ]
   },
-  "include": ["src", "generated"]
+  "include": [
+    "src",
+    "envio-env.d.ts",
+    ".envio/**/*.d.ts"
+  ]
 }

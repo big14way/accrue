@@ -51,6 +51,8 @@ export interface AccrueConfig {
   rpcUrl?: string;
   /** A viem account or a 0x-prefixed private key. Optional for read-only use. */
   account?: Account | Hex;
+  /** An existing viem/wagmi WalletClient (browser wallets, Privy). Takes precedence over `account`. */
+  walletClient?: WalletClient;
   transport?: Transport;
 }
 
@@ -156,7 +158,10 @@ export class Accrue {
             { rank: false },
           ));
     this.publicClient = createPublicClient({ chain: this.chain, transport });
-    if (cfg.account) {
+    if (cfg.walletClient) {
+      this.walletClient = cfg.walletClient;
+      this.account = cfg.walletClient.account ?? undefined;
+    } else if (cfg.account) {
       this.account = typeof cfg.account === "string" ? privateKeyToAccount(cfg.account) : cfg.account;
       this.walletClient = createWalletClient({ chain: this.chain, transport, account: this.account });
     }
