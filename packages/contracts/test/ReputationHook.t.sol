@@ -80,6 +80,18 @@ contract ReputationHookTest is BaseTest {
         assertEq(_count(""), 0);
     }
 
+    /// @dev Regression: a starved call must revert loudly, never silently skip the write.
+    function test_gasFloorPreventsSilentSkip() public {
+        uint256 id = _fundedJob(100 * USD);
+        _submit(id, D, uint64(block.number));
+        _attestFirst(id, D, true);
+        vm.prank(attestor2);
+        vm.expectRevert(); // InsufficientGas bubbles up through the router and the escrow
+        evaluator.attest{gas: 350_000}(id, D, true, "ok");
+        assertEq(uint8(_status(id)), uint8(IERC8183.JobStatus.Submitted), "nothing settled");
+        assertEq(_count(""), 0);
+    }
+
     function test_providerCannotWriteOwnFeedback() public {
         vm.prank(provider);
         vm.expectRevert("Self-feedback not allowed");

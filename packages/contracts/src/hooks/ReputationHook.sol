@@ -24,6 +24,13 @@ contract ReputationHook is BaseHook {
     int128 public constant VALUE_LATE = 50;
     int128 public constant VALUE_REJECTED = 0;
 
+    /// @dev Gas discipline around the try/catch: eth_estimateGas searches for the smallest gas
+    ///      at which the tx succeeds, and a starved inner call that runs out of gas is *caught*
+    ///      (empty reason) — so without a floor, estimation would silently skip the write.
+    ///      Reverting below the floor forces callers to budget for the registry call.
+    uint256 public constant FEEDBACK_GAS_FLOOR = 400_000;
+    uint256 public constant FEEDBACK_GAS = 320_000;
+
     IERC8004ReputationRegistry public immutable reputation;
     /// @notice Optional SLAHook to distinguish on-time from late completions (address(0) = all on-time).
     SLAHook public immutable slaHook;
@@ -32,6 +39,8 @@ contract ReputationHook is BaseHook {
 
     event FeedbackWritten(uint256 indexed jobId, uint256 indexed agentId, int128 value, string tag2);
     event FeedbackSkipped(uint256 indexed jobId, uint256 indexed agentId, bytes reason);
+
+    error InsufficientGas(uint256 have, uint256 need);
 
     constructor(address escrow_, address[] memory trustedCallers_, address reputation_, address slaHook_)
         BaseHook(escrow_, trustedCallers_)
@@ -68,7 +77,8 @@ contract ReputationHook is BaseHook {
             return;
         }
         bytes32 feedbackHash = keccak256(abi.encode(address(escrow), jobId, job.deliverable));
-        try reputation.giveFeedback(agentId, value, 0, TAG1, tag2, "", "", feedbackHash) {
+        if (gasleft() < FEEDBACK_GAS_FLOOR) revert InsufficientGas(gasleft(), FEEDBACK_GAS_FLOOR);
+        try reputation.giveFeedback{gas: FEEDBACK_GAS}(agentId, value, 0, TAG1, tag2, "", "", feedbackHash) {
             emit FeedbackWritten(jobId, agentId, value, tag2);
         } catch (bytes memory reason) {
             emit FeedbackSkipped(jobId, agentId, reason);

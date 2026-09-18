@@ -33,6 +33,9 @@ contract AdvancePool is ERC4626, ReentrancyGuard, IDisburser, ERC165 {
     uint256 public constant BPS = 10_000;
     uint256 public constant WAD = 1e18;
     string public constant CREDIT_TAG = "accrue:credit";
+    /// @dev See ReputationHook: floors keep gas estimation from starving the try/catch calls.
+    uint256 public constant FEEDBACK_GAS_FLOOR = 400_000;
+    uint256 public constant FEEDBACK_GAS = 320_000;
 
     IAccrueEscrow public immutable escrow;
     CreditScorer public immutable scorer;
@@ -94,6 +97,7 @@ contract AdvancePool is ERC4626, ReentrancyGuard, IDisburser, ERC165 {
     error PoolCapReached(uint256 requested, uint256 headroom);
     error JobNotTerminal();
     error ZeroAmount();
+    error InsufficientGas(uint256 have, uint256 need);
 
     constructor(
         address escrow_,

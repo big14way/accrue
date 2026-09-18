@@ -44,11 +44,16 @@ contract CreditScorer {
 
     string public constant SLA_TAG = "accrue:sla";
     string public constant CREDIT_TAG = "accrue:credit";
+    /// @dev Five registry reads sit behind try/catch; a gas floor stops gas estimation from
+    ///      starving them (which would silently price a provider at the base tier).
+    uint256 public constant SCORE_GAS_FLOOR = 1_500_000;
 
     IERC8004ReputationRegistry public immutable reputation;
     /// @notice Feedback authors that count: [ReputationHook] and [AdvancePool].
     address public immutable slaClient;
     address public immutable creditClient;
+
+    error InsufficientGas(uint256 have, uint256 need);
 
     struct Score {
         uint64 onTime;
@@ -81,6 +86,7 @@ contract CreditScorer {
     /// @notice Every input and output of the formula, for the provider page.
     function explain(uint256 agentId) public view returns (Score memory s) {
         if (agentId != 0) {
+            if (gasleft() < SCORE_GAS_FLOOR) revert InsufficientGas(gasleft(), SCORE_GAS_FLOOR);
             s.onTime = _count(agentId, slaClient, SLA_TAG, "on-time");
             s.late = _count(agentId, slaClient, SLA_TAG, "late");
             s.rejected = _count(agentId, slaClient, SLA_TAG, "rejected");

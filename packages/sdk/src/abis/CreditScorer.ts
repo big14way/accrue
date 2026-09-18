@@ -257,6 +257,19 @@ export const creditScorerAbi = [
   },
   {
     "type": "function",
+    "name": "SCORE_GAS_FLOOR",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "SLA_TAG",
     "inputs": [],
     "outputs": [
@@ -414,5 +427,21 @@ export const creditScorerAbi = [
       }
     ],
     "stateMutability": "view"
+  },
+  {
+    "type": "error",
+    "name": "InsufficientGas",
+    "inputs": [
+      {
+        "name": "have",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "need",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
   }
 ] as const;

@@ -45,6 +45,9 @@ contract AccrueEscrow is IAccrueEscrow, ReentrancyGuard {
     /// @notice ERC-4626 rounding can leave a redemption a few wei short of the deposit. Deficits at
     ///         or below this are absorbed silently; anything larger is reported as a VaultShortfall.
     uint256 public constant ROUNDING_DUST = 100;
+    /// @notice claimRefund wraps the vault redeem in try/catch; this floor stops gas estimation
+    ///         from starving the redeem and taking the share-return fallback by accident.
+    uint256 public constant REDEEM_GAS_FLOOR = 1_000_000;
 
     IERC20 internal immutable _token;
     IERC4626 internal immutable _vault;
@@ -79,6 +82,7 @@ contract AccrueEscrow is IAccrueEscrow, ReentrancyGuard {
     error PayoutLocked();
     error NotLocker();
     error ReceiverMustBeContract();
+    error InsufficientGas(uint256 have, uint256 need);
 
     // ───────────────────────────── Constructor ─────────────────────────────
 
@@ -394,6 +398,7 @@ contract AccrueEscrow is IAccrueEscrow, ReentrancyGuard {
                 principal = job.budget;
             } else {
                 job.vaultShares = 0;
+                if (gasleft() < REDEEM_GAS_FLOOR) revert InsufficientGas(gasleft(), REDEEM_GAS_FLOOR);
                 try _vault.redeem(shares, address(this), address(this)) returns (uint256 assets) {
                     (principal, yieldAmount) = _account(jobId, job.budget, assets);
                 } catch {

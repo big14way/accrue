@@ -62,6 +62,19 @@ export const accrueEscrowAbi = [
   },
   {
     "type": "function",
+    "name": "REDEEM_GAS_FLOOR",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "ROUNDING_DUST",
     "inputs": [],
     "outputs": [
@@ -1091,6 +1104,22 @@ export const accrueEscrowAbi = [
     "type": "error",
     "name": "GracePeriodActive",
     "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InsufficientGas",
+    "inputs": [
+      {
+        "name": "have",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "need",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
   },
   {
     "type": "error",

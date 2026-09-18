@@ -5,7 +5,7 @@ import { Accrue, loadDeployment, hashDeliverable, parseUsd, formatUsd, type Depl
 import type { Hex } from "viem";
 
 export const here = dirname(fileURLToPath(import.meta.url));
-export const drillDir = resolve(here, "..", "..", "..", "docs", "drill");
+export const drillDir = process.env.DRILL_OUT ?? resolve(here, "..", "..", "..", "docs", "drill");
 
 export interface Actors {
   deployment: Deployment;
@@ -95,7 +95,7 @@ export class Report {
       ...this.steps.map((s) => `| ${s.step} | ${s.ok ? "✓" : "✗"} | ${(s.detail ?? "").replace(/\|/g, "\\|")} | ${s.explorer ? `[${s.tx?.slice(0, 10)}…](${s.explorer})` : ""} |`),
       "", ...Object.entries(extra).map(([k, v]) => `- **${k}**: ${typeof v === "object" ? "`" + JSON.stringify(v, (_k, x) => (typeof x === "bigint" ? x.toString() : x)) + "`" : String(v)}`)];
     writeFileSync(resolve(drillDir, `${this.name}.md`), md.join("\n") + "\n");
-    console.log(`\nreport → docs/drill/${this.name}.{json,md}  ${body.passed ? "PASS" : "FAIL"}`);
+    console.log(`\nreport → ${drillDir}/${this.name}.{json,md}  ${body.passed ? "PASS" : "FAIL"}`);
   }
 }
 
