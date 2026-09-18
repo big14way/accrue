@@ -58,9 +58,6 @@ app.use(
       },
     },
     resourceServer,
-    undefined,
-    undefined,
-    false,
   ),
 );
 
