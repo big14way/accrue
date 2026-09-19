@@ -42,9 +42,3 @@ number_underscore = "thousands"
 [rpc_endpoints]
 monad_testnet = "https://testnet-rpc.monad.xyz"
 monad_mainnet = "https://rpc.monad.xyz"
-
-[etherscan]
-monad_testnet = { key = "${MONADSCAN_API_KEY}", chain = 10143, url = "https://api.monadscan.com/api" }
-
-[lint]
-exclude_lints = ["block-timestamp", "unsafe-typecast", "mixed-case-function", "mixed-case-variable"]
