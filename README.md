@@ -111,6 +111,7 @@ Every address with its deployment block is in [docs/deployments](docs/deployment
 | [D3 advance + reject](docs/drill/d3-advance-reject.md) | PASS | Advance paid now; rejection → bond seized, shortfall recorded, ERC-8004 default; limit 10 % → 0 % |
 | [D4 evaluator attack](docs/drill/d4-evaluator-attack.md) | PASS | Wrong hash, non-member and non-forwarder attestations all refused |
 | [D5 throughput](docs/drill/d5-throughput.md) | PASS | Jobs funded and settled back to back; wall clock, blocks and gas recorded |
+| [Live agents](docs/drill/live-agents.md) | PASS | Client posts; the provider **agent** quotes and delivers; the evaluator **daemon** re-fetches, verifies and settles. No human in the loop |
 
 ## Quickstart
 
@@ -130,8 +131,9 @@ pnpm --filter @accrue/evaluator daemon         # committee attestor
 pnpm --filter @accrue/indexer dev              # Envio (needs Docker)
 pnpm --filter @accrue/console dev              # http://localhost:3000
 
-# drills → docs/drill/*.json|md
+# drills → docs/drill/*.json|md  (DRILL_BUDGET_USD=1000 or more so yield is visible at 6 dp)
 pnpm --filter @accrue/drill all
+pnpm --filter @accrue/drill live              # with server + agent + daemon running: agents settle a job end to end
 
 # MCP: add to Claude/Cursor as { "command": "node", "args": ["packages/sdk/dist/mcp.js"], "env": { "ACCRUE_PRIVATE_KEY": "0x…" } }
 ```

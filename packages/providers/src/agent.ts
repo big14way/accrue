@@ -21,6 +21,8 @@ const accrue = new Accrue({ deployment, account: key, rpcUrl: process.env.MONAD_
 const token = await accrue.tokenInfo();
 const me = accrue.address!.toLowerCase();
 const budget = parseUsd(process.env.DEFAULT_BUDGET_USD ?? "1", token.decimals);
+/** Ignore jobs below this id (e.g. leftovers from drills) to save gas. */
+const fromJob = BigInt(process.env.AGENT_FROM_JOB ?? 1);
 const handled = new Set<string>();
 
 console.log(`[agent:${kind}] provider ${me} on chain ${deployment.chainId}; quoting ${formatUsd(budget, token.decimals)} ${token.symbol} per job`);
@@ -62,14 +64,33 @@ async function onFunded(jobId: bigint) {
   }
 }
 
-// Catch up on existing jobs, then watch.
-const n = await accrue.jobCount();
-for (let i = n > 50n ? n - 49n : 1n; i <= n; i++) {
-  const j = await accrue.getJob(i).catch(() => undefined);
-  if (!j || j.provider.toLowerCase() !== me) continue;
-  if (j.status === "Open" && j.budget === 0n) await onCreated(i).catch(console.error);
-  if (j.status === "Funded") await onFunded(i).catch(console.error);
+// Sweep recent jobs on start and every few seconds (public RPCs do not always deliver
+// log subscriptions reliably), and also watch events for low latency.
+let sweeping = false;
+async function sweep() {
+  if (sweeping) return;
+  sweeping = true;
+  try {
+    const n = await accrue.jobCount();
+    const start = n > 50n ? n - 49n : 1n;
+    for (let i = start > fromJob ? start : fromJob; i <= n; i++) {
+      const j = await accrue.getJob(i).catch(() => undefined);
+      if (!j || j.provider.toLowerCase() !== me) continue;
+      if (j.status === "Open" && j.budget === 0n && !handled.has(`c${i}`)) {
+        handled.add(`c${i}`);
+        await onCreated(i).catch((e) => console.error(`[agent:${kind}] quote failed for #${i}: ${e?.sentence ?? e?.message}`));
+      }
+      if (j.status === "Funded" && !handled.has(`f${i}`)) {
+        handled.add(`f${i}`);
+        await onFunded(i).catch((e) => console.error(`[agent:${kind}] submit failed for #${i}: ${e?.sentence ?? e?.message}`));
+      }
+    }
+  } finally {
+    sweeping = false;
+  }
 }
+await sweep();
+setInterval(() => sweep().catch(console.error), Number(process.env.SWEEP_MS ?? 5000));
 
 accrue.publicClient.watchContractEvent({
   address: deployment.escrow,
@@ -79,12 +100,14 @@ accrue.publicClient.watchContractEvent({
   onLogs: (logs) => {
     for (const l of logs) {
       const id = (l.args as { jobId: bigint }).jobId;
+      if (id < fromJob) continue;
       const k = `c${id}`;
       if (handled.has(k)) continue;
       handled.add(k);
       onCreated(id).catch(console.error);
     }
   },
+  onError: (e) => console.error(`[agent:${kind}] JobCreated watcher: ${e.message}`),
 });
 accrue.publicClient.watchContractEvent({
   address: deployment.escrow,
@@ -94,10 +117,12 @@ accrue.publicClient.watchContractEvent({
   onLogs: (logs) => {
     for (const l of logs) {
       const id = (l.args as { jobId: bigint }).jobId;
+      if (id < fromJob) continue;
       const k = `f${id}`;
       if (handled.has(k)) continue;
       handled.add(k);
       onFunded(id).catch(console.error);
     }
   },
+  onError: (e) => console.error(`[agent:${kind}] JobFunded watcher: ${e.message}`),
 });

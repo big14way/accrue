@@ -16,6 +16,8 @@ const deployment = await loadDeployment();
 const accrue = new Accrue({ deployment, account: key, rpcUrl: process.env.MONAD_RPC });
 await accrue.tokenInfo();
 const seen = new Set<string>();
+/** Ignore jobs below this id (e.g. leftovers from drills) to save gas. */
+const fromJob = BigInt(process.env.EVALUATOR_FROM_JOB ?? 1);
 console.log(`[evaluator] committee member ${accrue.address} watching ${deployment.escrow} on chain ${deployment.chainId}`);
 
 async function handle(jobId: bigint) {
@@ -33,7 +35,8 @@ async function handle(jobId: bigint) {
 
 async function sweepDeadlines() {
   const n = await accrue.jobCount();
-  for (let i = n > 100n ? n - 99n : 1n; i <= n; i++) {
+  const start = n > 100n ? n - 99n : 1n;
+  for (let i = start > fromJob ? start : fromJob; i <= n; i++) {
     const j = await accrue.getJob(i).catch(() => undefined);
     if (!j) continue;
     if (j.status === "Submitted" && !seen.has(`s${i}`)) {
@@ -63,9 +66,10 @@ accrue.publicClient.watchContractEvent({
   onLogs: (logs) => {
     for (const l of logs) {
       const id = (l.args as { jobId: bigint }).jobId;
-      if (seen.has(`s${id}`)) continue;
+      if (id < fromJob || seen.has(`s${id}`)) continue;
       seen.add(`s${id}`);
       handle(id).catch(console.error);
     }
   },
+  onError: (e) => console.error(`[evaluator] JobSubmitted watcher: ${e.message}`),
 });
