@@ -53,3 +53,6 @@ docs/deployments/local-*.json
 packages/evaluator/cre/.env
 .vercel
 .env*
+
+# CRE compile artifacts
+packages/evaluator/cre/**/.cre_build_tmp.*
