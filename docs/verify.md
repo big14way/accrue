@@ -138,10 +138,10 @@ the SDK / console as an advisory input; never on chain.
 
 | Item | Why | Who |
 |---|---|---|
-| Testnet MON for the deployer | deploy + drills on 10143 | faucet.monad.xyz |
+| Testnet MON for the deployer | deploy + drills on 10143 | done (18 Sep) |
 | Testnet USDC for demo wallets | fund jobs | faucet.circle.com |
 | Chainlink CRE account + Early Access | production workflow deployment (simulation works without) | cre.chain.link |
-| Nansen API key | provider labels in console (advisory) | app.nansen.ai |
-| Privy app id | human onboarding in console (wallet fallback works without) | dashboard.privy.io |
+| Nansen API key | provider labels in console (advisory) | done (local env) |
+| Privy app id | human onboarding in console (wallet fallback works without) | done (local env) |
 | Cleanverse sandbox | swap `CredentialRegistry` for A-Pass validator | cleanverse.com |
 | Monadscan API key | Etherscan-style verification (Sourcify works without) | monadscan.com |

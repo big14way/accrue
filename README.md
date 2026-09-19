@@ -81,7 +81,36 @@ anyone ── enforceDeadline() after a missed deadline; claimRefund() after exp
 
 ## Deployments
 
-See [docs/deployments](docs/deployments) for every address with the deployment block. Chain constants and third-party addresses (ERC-8004 registries, Chainlink CRE forwarders, USDC/AUSD, Morpho vaults) are verified in [docs/verify.md](docs/verify.md).
+### Monad testnet (chain 10143) — deployed at block 63929211, all contracts verified on Sourcify
+
+| Contract | Address |
+|---|---|
+| AccrueEscrow | [`0xF39D05c6DBf186c2c1DC17392C642394F54DC171`](https://testnet.monadexplorer.com/address/0xF39D05c6DBf186c2c1DC17392C642394F54DC171) |
+| SLAHook | [`0xE4D6aB90dDc13798ccC59f01c4e61016523820fd`](https://testnet.monadexplorer.com/address/0xE4D6aB90dDc13798ccC59f01c4e61016523820fd) |
+| ReputationHook | [`0xCf3088f95D67926F4399C00251533614Dc132948`](https://testnet.monadexplorer.com/address/0xCf3088f95D67926F4399C00251533614Dc132948) |
+| HookRouter (SLA + reputation) | [`0x1d18B947BEd5B339A00805173cD15a7f211B48a3`](https://testnet.monadexplorer.com/address/0x1d18B947BEd5B339A00805173cD15a7f211B48a3) |
+| ComplianceHook | [`0x1AF18e6c004EDB640D32d95A8f317b9904Ef8D48`](https://testnet.monadexplorer.com/address/0x1AF18e6c004EDB640D32d95A8f317b9904Ef8D48) |
+| CredentialRegistry | [`0x40097F76CAD6854499DC533Cb74158cf8082D8Bb`](https://testnet.monadexplorer.com/address/0x40097F76CAD6854499DC533Cb74158cf8082D8Bb) |
+| HookRouter (compliance + SLA + reputation) | [`0xD282D7c8B19F2CCbe920e497B639BD5Af5aB6Bb3`](https://testnet.monadexplorer.com/address/0xD282D7c8B19F2CCbe920e497B639BD5Af5aB6Bb3) |
+| Evaluator (CRE + committee) | [`0x2d3a77a7A026d7ce1547fd8eE706309eAC404943`](https://testnet.monadexplorer.com/address/0x2d3a77a7A026d7ce1547fd8eE706309eAC404943) |
+| CreditScorer | [`0x6c9fFd452238C627eb4e0fe746E01bade2f3e862`](https://testnet.monadexplorer.com/address/0x6c9fFd452238C627eb4e0fe746E01bade2f3e862) |
+| AdvancePool | [`0x3877Adf5F35f68cEFB1804785e1C050959383407`](https://testnet.monadexplorer.com/address/0x3877Adf5F35f68cEFB1804785e1C050959383407) |
+| MockYieldVault (6.8 % APR) | [`0x4fA031F8C9134A3801C589Ac2021e7904654aB7D`](https://testnet.monadexplorer.com/address/0x4fA031F8C9134A3801C589Ac2021e7904654aB7D) |
+| Test dollar (mintable) | [`0x449dF56DE4913586AaBBDEe7159acaCf8170abdb`](https://testnet.monadexplorer.com/address/0x449dF56DE4913586AaBBDEe7159acaCf8170abdb) |
+
+ERC-8004 registries used: Identity `0x8004A818BFB912233c491871b3d84c89A494BD9e`, Reputation `0x8004B663056A597Dffe9eCcC1965A193B7388713` (the demo provider is agent **#1891**). Chainlink CRE ingress: MockKeystoneForwarder `0xB9F79d863261869B234c481D1f9A7af84AeAd192` for `cre workflow simulate --broadcast`. Committee: `0xa4Ed2Fc4882C72fBdfA716AA76808E10F23D6004`, `0x254334Ca01a8ebD58D1a34d6cb939142978D9B7F` (threshold 1).
+
+Every address with its deployment block is in [docs/deployments](docs/deployments). Third-party addresses (registries, forwarders, USDC/AUSD, Morpho vaults) are verified in [docs/verify.md](docs/verify.md). Mainnet deployment (real USDC/AUSD + Morpho vault) uses the same script with `PAYMENT_TOKEN`/`YIELD_VAULT` set.
+
+### Drill results on testnet
+
+| Drill | Result | What it proves |
+|---|---|---|
+| [D1 stale + deadline](docs/drill/d1-stale.md) | PASS | `StaleData` reverts in the provider's own tx; `enforceDeadline` refunds principal + yield in one tx |
+| [D2 on-time](docs/drill/d2-ontime.md) | PASS | One tx pays provider (principal + 40 % of yield), client (50 %), protocol (10 %) |
+| [D3 advance + reject](docs/drill/d3-advance-reject.md) | PASS | Advance paid now; rejection → bond seized, shortfall recorded, ERC-8004 default; limit 10 % → 0 % |
+| [D4 evaluator attack](docs/drill/d4-evaluator-attack.md) | PASS | Wrong hash, non-member and non-forwarder attestations all refused |
+| [D5 throughput](docs/drill/d5-throughput.md) | PASS | Jobs funded and settled back to back; wall clock, blocks and gas recorded |
 
 ## Quickstart
 
