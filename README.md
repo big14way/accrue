@@ -112,6 +112,7 @@ Every address with its deployment block is in [docs/deployments](docs/deployment
 | [D4 evaluator attack](docs/drill/d4-evaluator-attack.md) | PASS | Wrong hash, non-member and non-forwarder attestations all refused |
 | [D5 throughput](docs/drill/d5-throughput.md) | PASS | Jobs funded and settled back to back; wall clock, blocks and gas recorded |
 | [Live agents](docs/drill/live-agents.md) | PASS | Client posts; the provider **agent** quotes and delivers; the evaluator **daemon** re-fetches, verifies and settles. No human in the loop |
+| [Chainlink CRE attestation](docs/drill/cre-attestation.md) | PASS | Job #20 settled by a **CRE workflow report** delivered through the Monad KeystoneForwarder (mock) into `Evaluator.onReport` |
 
 ## Quickstart
 

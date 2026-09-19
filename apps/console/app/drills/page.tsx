@@ -1,14 +1,9 @@
-import { readdirSync, readFileSync, existsSync } from "node:fs";
-import { resolve } from "node:path";
-
-export const dynamic = "force-dynamic";
+import { drills as synced } from "@/lib/drill";
 
 interface Drill { drill: string; title: string; ranAt: string; passed: boolean; steps: { step: string; ok: boolean; detail?: string; tx?: string; explorer?: string; gasUsed?: string }[]; [k: string]: unknown }
 
 function load(): Drill[] {
-  const dir = resolve(process.cwd(), "..", "..", "docs", "drill");
-  if (!existsSync(dir)) return [];
-  return readdirSync(dir).filter((f) => f.endsWith(".json")).sort().map((f) => JSON.parse(readFileSync(resolve(dir, f), "utf8")) as Drill);
+  return synced as unknown as Drill[];
 }
 
 export default function Drills() {

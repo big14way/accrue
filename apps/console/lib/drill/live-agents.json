@@ -1,0 +1,45 @@
+{
+  "drill": "live-agents",
+  "title": "Live — provider agent and evaluator daemon settle a job with no human in the loop",
+  "ranAt": "2026-09-19T16:53:14.193Z",
+  "passed": true,
+  "steps": [
+    {
+      "step": "client posts a job (40 % yield bonus to the provider)",
+      "ok": true,
+      "ms": 9538,
+      "tx": "0x67acc00e19dcf031fef0770fc5f8d50daf9e71128df760f2a0bf219927b45189",
+      "explorer": "https://testnet.monadexplorer.com/tx/0x67acc00e19dcf031fef0770fc5f8d50daf9e71128df760f2a0bf219927b45189",
+      "detail": "jobId 19"
+    },
+    {
+      "step": "provider agent quoted a budget",
+      "ok": true,
+      "detail": "250 tUSD after 0 s",
+      "ms": 1
+    },
+    {
+      "step": "client funds → vault",
+      "ok": true,
+      "ms": 8014,
+      "tx": "0xb08161a8374eff5b9ac3e2b6dca19e3539acaf687af86a89fd2e37186a34ceaf",
+      "explorer": "https://testnet.monadexplorer.com/tx/0xb08161a8374eff5b9ac3e2b6dca19e3539acaf687af86a89fd2e37186a34ceaf",
+      "gasUsed": "380268",
+      "block": "63934997"
+    },
+    {
+      "step": "provider agent delivered and the evaluator daemon settled",
+      "ok": true,
+      "detail": "status Completed after 15 s; deliverable 0x39f9fac3…",
+      "ms": 14832
+    }
+  ],
+  "jobId": "19",
+  "settlement": {
+    "principal": "0",
+    "yieldAmount": "0",
+    "toClient": "0",
+    "toProvider": "0",
+    "toProtocol": "0"
+  }
+}

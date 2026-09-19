@@ -1,0 +1,63 @@
+{
+  "drill": "d1-stale",
+  "title": "D1 — Stale delivery refused on chain, deadline miss auto-refunded",
+  "ranAt": "2026-09-19T16:30:25.280Z",
+  "passed": true,
+  "steps": [
+    {
+      "step": "client creates job with minFreshnessBlock = latest and a 90 s deadline",
+      "ok": true,
+      "ms": 6824,
+      "tx": "0x788fbe815776a6d73efd3aece0d947a788c739257a95ed8c70a683018d111f12",
+      "explorer": "https://testnet.monadexplorer.com/tx/0x788fbe815776a6d73efd3aece0d947a788c739257a95ed8c70a683018d111f12",
+      "detail": "jobId 1"
+    },
+    {
+      "step": "provider quotes budget",
+      "ok": true,
+      "ms": 2317,
+      "tx": "0xf026bc308776bb5f9f4b16ef769f8086577369d7cb16eb149058a3440a656645",
+      "explorer": "https://testnet.monadexplorer.com/tx/0xf026bc308776bb5f9f4b16ef769f8086577369d7cb16eb149058a3440a656645",
+      "gasUsed": "164616",
+      "block": "63930159"
+    },
+    {
+      "step": "client funds → budget goes into the yield vault",
+      "ok": true,
+      "ms": 4848,
+      "tx": "0xb62c581dde5b88902dca7b166d725c689469ac4dc5045ba9867290322b1a2da3",
+      "explorer": "https://testnet.monadexplorer.com/tx/0xb62c581dde5b88902dca7b166d725c689469ac4dc5045ba9867290322b1a2da3",
+      "gasUsed": "395992",
+      "block": "63930179"
+    },
+    {
+      "step": "provider submits data from block 63930112 (< committed 63930132)",
+      "ok": true,
+      "ms": 397,
+      "detail": "refused on chain: Stale data: the job requires data from block 63930132 or later, but the delivery is from block 63930112. [StaleData]"
+    },
+    {
+      "step": "job is still Funded; nothing moved",
+      "ok": true,
+      "detail": "status Funded, escrow shares 1000000000"
+    },
+    {
+      "step": "anyone enforces the deadline → reject → refund in one tx",
+      "ok": true,
+      "ms": 1267,
+      "tx": "0x6d2b0e0abfc9b4a2b34f49e4c0f6e675174acb97137f7efea5620524a11d2442",
+      "explorer": "https://testnet.monadexplorer.com/tx/0x6d2b0e0abfc9b4a2b34f49e4c0f6e675174acb97137f7efea5620524a11d2442",
+      "gasUsed": "730320",
+      "block": "63930515",
+      "detail": "block 63930515"
+    },
+    {
+      "step": "client refunded principal + accrued yield",
+      "ok": true,
+      "detail": "status Rejected; client balance 100000 → 100000.000288 tUSD; yield preview before settle 0.000281"
+    }
+  ],
+  "jobId": "1",
+  "escrow": "0xF39D05c6DBf186c2c1DC17392C642394F54DC171",
+  "budget": "1000 tUSD"
+}

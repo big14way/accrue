@@ -3,5 +3,5 @@
   "escrowAddress": "0xF39D05c6DBf186c2c1DC17392C642394F54DC171",
   "slaHookAddress": "0xE4D6aB90dDc13798ccC59f01c4e61016523820fd",
   "evaluatorAddress": "0x2d3a77a7A026d7ce1547fd8eE706309eAC404943",
-  "gasLimit": "600000"
+  "gasLimit": "2000000"
 }

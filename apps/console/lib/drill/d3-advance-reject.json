@@ -1,0 +1,129 @@
+{
+  "drill": "d3-advance-reject",
+  "title": "D3 — Advance against escrow, rejection, bond seizure, score drop",
+  "ranAt": "2026-09-19T16:32:27.802Z",
+  "passed": true,
+  "steps": [
+    {
+      "step": "client creates job",
+      "ok": true,
+      "ms": 5028,
+      "tx": "0x3e8dd983931df342139551ea1243147ddf6ec6daae06e317385d09acfbd9a2ab",
+      "explorer": "https://testnet.monadexplorer.com/tx/0x3e8dd983931df342139551ea1243147ddf6ec6daae06e317385d09acfbd9a2ab",
+      "detail": "jobId 3"
+    },
+    {
+      "step": "provider quotes budget",
+      "ok": true,
+      "ms": 2726,
+      "tx": "0x4994fb73fdf6f62350e09937d3fbbf936f6dc0c368e22e982b4e79d070017fd9",
+      "explorer": "https://testnet.monadexplorer.com/tx/0x4994fb73fdf6f62350e09937d3fbbf936f6dc0c368e22e982b4e79d070017fd9",
+      "gasUsed": "164616",
+      "block": "63930847"
+    },
+    {
+      "step": "client funds",
+      "ok": true,
+      "ms": 3494,
+      "tx": "0x3c65ddb4db63fb04a54ac543b12cbcba556be44fb8966556ddab55071752f2bf",
+      "explorer": "https://testnet.monadexplorer.com/tx/0x3c65ddb4db63fb04a54ac543b12cbcba556be44fb8966556ddab55071752f2bf",
+      "gasUsed": "380256",
+      "block": "63930862"
+    },
+    {
+      "step": "credit limit from ERC-8004 history",
+      "ok": true,
+      "detail": "max advance 100 tUSD (10 % of budget, APR 33 %, bond 55 %)"
+    },
+    {
+      "step": "provider takes the full advance",
+      "ok": true,
+      "ms": 8147,
+      "tx": "0x108f92979de50fe8dbd3acf3f5fefeac40155d97995d9688d072c6dfc06f5631",
+      "explorer": "https://testnet.monadexplorer.com/tx/0x108f92979de50fe8dbd3acf3f5fefeac40155d97995d9688d072c6dfc06f5631",
+      "gasUsed": "1620396",
+      "block": "63930889"
+    },
+    {
+      "step": "cash arrived now (advance minus bond)",
+      "ok": true,
+      "detail": "provider +45 tUSD"
+    },
+    {
+      "step": "provider submits a hash that does not match what it serves",
+      "ok": true,
+      "ms": 2398,
+      "tx": "0x26227767845835384300ef7f29227b260eda044fe2c12765a84690e5f8151842",
+      "explorer": "https://testnet.monadexplorer.com/tx/0x26227767845835384300ef7f29227b260eda044fe2c12765a84690e5f8151842",
+      "gasUsed": "212533",
+      "block": "63930899"
+    },
+    {
+      "step": "committee member 0x254334 attests REJECT",
+      "ok": true,
+      "ms": 1561,
+      "tx": "0xcc173cc302faf3b50f59cc56af839d1abf7bf946d38108803ce9f9636058d872",
+      "explorer": "https://testnet.monadexplorer.com/tx/0xcc173cc302faf3b50f59cc56af839d1abf7bf946d38108803ce9f9636058d872",
+      "gasUsed": "783308",
+      "block": "63930907"
+    },
+    {
+      "step": "client refunded",
+      "ok": true,
+      "detail": "status Rejected"
+    },
+    {
+      "step": "anyone resolves the lien → bond seized, shortfall recorded, ERC-8004 default written",
+      "ok": true,
+      "ms": 2780,
+      "tx": "0x37ba799b13326e6631f24d84b01588de0324e245b1da948d7efc2cc28754b175",
+      "explorer": "https://testnet.monadexplorer.com/tx/0x37ba799b13326e6631f24d84b01588de0324e245b1da948d7efc2cc28754b175",
+      "gasUsed": "334577",
+      "block": "63930918"
+    },
+    {
+      "step": "pool absorbed the priced loss",
+      "ok": true,
+      "detail": "shortfall +45 tUSD; defaults 0 → 1"
+    },
+    {
+      "step": "provider credit limit dropped",
+      "ok": true,
+      "detail": "maxAdvance 10 % → 0 %, APR 33 % → 38 %"
+    }
+  ],
+  "jobId": "3",
+  "advance": "0x108f92979de50fe8dbd3acf3f5fefeac40155d97995d9688d072c6dfc06f5631",
+  "scoreBefore": {
+    "onTime": 1,
+    "late": 0,
+    "rejected": 1,
+    "repaid": 0,
+    "defaults": 0,
+    "maxAdvanceBps": 1000,
+    "aprBps": 3300,
+    "rateWadPerBlock": "4185692541",
+    "bondBps": 5500,
+    "formula": {
+      "maxAdvance": "min(80 %, 20 % + 5 %·onTime + 2 %·late − 15 %·rejected − 30 %·defaults)",
+      "apr": "max(6 %, 30 % − 2 %·onTime + 5 %·rejected + 10 %·defaults), charged per 400 ms block",
+      "bond": "clamp(50 % − 5 %·onTime + 10 %·rejected, 10 %, 100 %) of the advance"
+    }
+  },
+  "scoreAfter": {
+    "onTime": 1,
+    "late": 0,
+    "rejected": 2,
+    "repaid": 0,
+    "defaults": 0,
+    "maxAdvanceBps": 0,
+    "aprBps": 3800,
+    "rateWadPerBlock": "4819888381",
+    "bondBps": 6500,
+    "formula": {
+      "maxAdvance": "min(80 %, 20 % + 5 %·onTime + 2 %·late − 15 %·rejected − 30 %·defaults)",
+      "apr": "max(6 %, 30 % − 2 %·onTime + 5 %·rejected + 10 %·defaults), charged per 400 ms block",
+      "bond": "clamp(50 % − 5 %·onTime + 10 %·rejected, 10 %, 100 %) of the advance"
+    }
+  }
+}
