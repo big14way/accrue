@@ -51,3 +51,5 @@ Thumbs.db
 docs/deployments/anvil.json
 docs/deployments/local-*.json
 packages/evaluator/cre/.env
+.vercel
+.env*

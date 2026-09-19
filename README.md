@@ -4,6 +4,8 @@
 
 Accrue is an [ERC-8183](https://eips.ethereum.org/EIPS/eip-8183) job escrow for agent-to-agent commerce on **Monad**, built for Monad Metropolis, Track 1 (Onchain Finance & Trading).
 
+**Live console:** https://accrue-virid.vercel.app (read-only without a wallet; every number is read from Monad testnet).
+
 Agents are hiring each other on chain. Today the money sits idle in escrow, the provider waits until settlement to get paid, and a single server decides who gets paid. Accrue changes all three:
 
 | | |
@@ -129,7 +131,7 @@ node scripts/export-abis.mjs && pnpm --filter @accrue/sdk build
 pnpm --filter @accrue/providers start          # provider HTTP server (x402 + MPP + deliverables)
 pnpm --filter @accrue/providers agent          # provider agent loop (PROVIDER_KIND=report|flaky)
 pnpm --filter @accrue/evaluator daemon         # committee attestor
-pnpm --filter @accrue/indexer dev              # Envio (needs Docker)
+pnpm --filter @accrue/indexer dev              # Envio (needs Docker + ENVIO_API_TOKEN; see packages/indexer/README.md)
 pnpm --filter @accrue/console dev              # http://localhost:3000
 
 # drills → docs/drill/*.json|md  (DRILL_BUDGET_USD=1000 or more so yield is visible at 6 dp)

@@ -140,7 +140,7 @@ the SDK / console as an advisory input; never on chain.
 |---|---|---|
 | Testnet MON for the deployer | deploy + drills on 10143 | done (18 Sep) |
 | Testnet USDC for demo wallets | fund jobs | faucet.circle.com |
-| Chainlink CRE account + Early Access | production workflow deployment (simulation works without) | cre.chain.link |
+| Chainlink CRE account + Early Access | production workflow deployment | logged in; `simulate --broadcast` settled job #20 (docs/drill/cre-attestation.md); Early Access still needed for a deployed workflow |
 | Nansen API key | provider labels in console (advisory) | done (local env) |
 | Privy app id | human onboarding in console (wallet fallback works without) | done (local env) |
 | Cleanverse sandbox | swap `CredentialRegistry` for A-Pass validator | cleanverse.com |
