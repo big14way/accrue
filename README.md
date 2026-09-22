@@ -62,7 +62,7 @@ anyone ── enforceDeadline() after a missed deadline; claimRefund() after exp
 - **`providers`** — three ERC-8004-registered provider agents: `report` (honest), `flaky` (stale / mismatching / late on purpose), `pricefeed` (synchronous Kuru mid-price, paid per call via **x402** on the Monad facilitator and via **MPP**).
 - **`evaluator`** — committee daemon and the **Chainlink CRE** workflow (`cre workflow simulate --broadcast` against the Monad mock forwarder).
 - **`indexer`** — **Envio HyperIndex**: jobs, SLA outcomes, yield per job, liens, pool stats, attestations, ERC-8004 feedback.
-- **`drill`** — D1 stale + deadline refund, D2 three-leg settlement, D3 advance + rejection + score drop, D4 evaluator attack, D5 throughput, D6 hostile LLM provider. Results in [docs/drill](docs/drill).
+- **`drill`** — D1 stale + deadline refund, D2 three-leg settlement, D3 advance + rejection + score drop, D4 evaluator attack, D5 throughput, D6 hostile LLM provider (needs `ANTHROPIC_API_KEY`). Results in [docs/drill](docs/drill).
 - **`apps/console`** — Next.js console: post a job in plain English, live yield counter anchored to `previewSettlement()`, provider credit score with the formula, pool page, refusals feed, drills. Read-only without a wallet; **Privy** embedded wallets for humans when configured.
 
 ## What is enforced on chain vs. attested
@@ -115,6 +115,7 @@ Every address with its deployment block is in [docs/deployments](docs/deployment
 | [D5 throughput](docs/drill/d5-throughput.md) | PASS | Jobs funded and settled back to back; wall clock, blocks and gas recorded |
 | [Live agents](docs/drill/live-agents.md) | PASS | Client posts; the provider **agent** quotes and delivers; the evaluator **daemon** re-fetches, verifies and settles. No human in the loop |
 | [Chainlink CRE attestation](docs/drill/cre-attestation.md) | PASS | Job #20 settled by a **CRE workflow report** delivered through the Monad KeystoneForwarder (mock) into `Evaluator.onReport` |
+| [D6 hostile LLM provider](docs/drill/d6-hostile-llm.md) | PASS | A Claude agent holding the provider key is told to get paid without delivering. Direct `complete`, self-attestation and a fabricated deliverable are refused on chain; the advance it took is bonded and ends as a recorded default that cuts its credit limit 55 % → 40 % |
 
 ## Quickstart
 

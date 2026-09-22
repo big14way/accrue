@@ -87,13 +87,16 @@ export class Report {
       throw e;
     }
   }
-  write(extra: Record<string, unknown> = {}) {
+  /** Writes <name>.json (steps + extra) and <name>.md. `appendix` is markdown appended to the .md; `omitFromMd` keeps bulky extras out of it. */
+  write(extra: Record<string, unknown> = {}, opts: { appendix?: string; omitFromMd?: string[] } = {}) {
     mkdirSync(drillDir, { recursive: true });
     const body = { drill: this.name, title: this.title, ranAt: new Date().toISOString(), passed: this.steps.every((s) => s.ok), steps: this.steps, ...extra };
     writeFileSync(resolve(drillDir, `${this.name}.json`), JSON.stringify(body, (_k, v) => (typeof v === "bigint" ? v.toString() : v), 2));
+    const shown = Object.entries(extra).filter(([k]) => !(opts.omitFromMd ?? []).includes(k));
     const md = [`# ${this.title}`, "", `Ran ${body.ranAt} — **${body.passed ? "PASS" : "FAIL"}**`, "", "| Step | Result | Detail | Tx |", "|---|---|---|---|",
       ...this.steps.map((s) => `| ${s.step} | ${s.ok ? "✓" : "✗"} | ${(s.detail ?? "").replace(/\|/g, "\\|")} | ${s.explorer ? `[${s.tx?.slice(0, 10)}…](${s.explorer})` : ""} |`),
-      "", ...Object.entries(extra).map(([k, v]) => `- **${k}**: ${typeof v === "object" ? "`" + JSON.stringify(v, (_k, x) => (typeof x === "bigint" ? x.toString() : x)) + "`" : String(v)}`)];
+      "", ...shown.map(([k, v]) => `- **${k}**: ${typeof v === "object" ? "`" + JSON.stringify(v, (_k, x) => (typeof x === "bigint" ? x.toString() : x)) + "`" : String(v)}`),
+      ...(opts.appendix ? ["", opts.appendix] : [])];
     writeFileSync(resolve(drillDir, `${this.name}.md`), md.join("\n") + "\n");
     console.log(`\nreport → ${drillDir}/${this.name}.{json,md}  ${body.passed ? "PASS" : "FAIL"}`);
   }

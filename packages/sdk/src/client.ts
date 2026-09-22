@@ -38,6 +38,7 @@ import {
   erc4626Abi,
 } from "./abis/index.js";
 import { CHAINS, ERC8004, RPC_FALLBACKS, explorerTx } from "./chains.js";
+import { rateLimited } from "./transport.js";
 import type { Deployment } from "./deployment.js";
 import { explainRevert } from "./errors.js";
 
@@ -149,12 +150,13 @@ export class Accrue {
     this.deployment = cfg.deployment;
     this.chain = cfg.chain ?? CHAINS[cfg.deployment.chainId];
     if (!this.chain) throw new Error(`unknown chain ${cfg.deployment.chainId}`);
+    // Public Monad RPCs cap requests at ~15/s and count every call inside a batch; see transport.ts.
     const transport =
       cfg.transport ??
       (cfg.rpcUrl
-        ? http(cfg.rpcUrl)
+        ? rateLimited(cfg.rpcUrl)
         : fallback(
-            (RPC_FALLBACKS[this.chain.id] ?? [this.chain.rpcUrls.default.http[0]]).map((u) => http(u, { timeout: 15_000 })),
+            (RPC_FALLBACKS[this.chain.id] ?? [this.chain.rpcUrls.default.http[0]]).map((u) => rateLimited(u)),
             { rank: false },
           ));
     this.publicClient = createPublicClient({ chain: this.chain, transport });

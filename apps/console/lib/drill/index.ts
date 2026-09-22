@@ -4,5 +4,6 @@ import d1 from "./d2-ontime.json";
 import d2 from "./d3-advance-reject.json";
 import d3 from "./d4-evaluator-attack.json";
 import d4 from "./d5-throughput.json";
-import d5 from "./live-agents.json";
-export const drills = [d0, d1, d2, d3, d4, d5] as const;
+import d5 from "./d6-hostile-llm.json";
+import d6 from "./live-agents.json";
+export const drills = [d0, d1, d2, d3, d4, d5, d6] as const;
