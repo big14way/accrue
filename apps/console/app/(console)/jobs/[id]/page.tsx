@@ -8,6 +8,7 @@ import { Status } from "@/components/JobTable";
 import { gql, Q_JOB } from "@/lib/envio";
 import { usd, ts, short, txUrl, addrUrl, deployment, ENVIO } from "@/lib/config";
 import { hashDeliverable, parseUsd } from "@accrue/sdk";
+import { Reveal, Stagger, Item } from "@/components/motion";
 
 export default function JobPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -48,7 +49,7 @@ export default function JobPage({ params }: { params: Promise<{ id: string }> })
   };
 
   if (error) return <p className="bad">{error}</p>;
-  if (!job) return <p className="muted">reading chain…</p>;
+  if (!job) return <div className="panel" style={{ minHeight: 200, display: "grid", placeItems: "center" }}><span className="muted">reading chain…</span></div>;
   const me = address?.toLowerCase();
   const isClient = me === job.client.toLowerCase();
   const isProvider = me === job.provider.toLowerCase();
@@ -57,25 +58,28 @@ export default function JobPage({ params }: { params: Promise<{ id: string }> })
 
   return (
     <div className="stack">
-      <div className="row">
-        <h1 style={{ margin: 0 }}>Job #{id}</h1>
-        <Status s={job.status} />
-        <span className="muted">{job.description}</span>
-      </div>
-      <div className="grid">
-        <div className="panel"><h3>Budget</h3><div className="kpi num">{usd(job.budget)}</div><div className="hint">in vault as {job.vaultShares.toString()} shares</div></div>
-        <YieldTicker job={job} />
-        <div className="panel"><h3>Settlement preview</h3>
-          <div className="num">principal {usd(job.settlement.principal)}</div>
-          <div className="num">→ client +{usd(job.settlement.toClient)} · provider +{usd(job.settlement.toProvider)} · protocol +{usd(job.settlement.toProtocol)}</div>
+      <Reveal>
+        <div className="page-head">
+          <div>
+            <span className="eyebrow">Job #{id}</span>
+            <div className="row" style={{ marginTop: 6 }}><h1 style={{ margin: 0 }}>{job.description || `Job #${id}`}</h1><Status s={job.status} /></div>
+          </div>
         </div>
-        <div className="panel"><h3>Parties</h3>
+      </Reveal>
+      <Stagger className="grid">
+        <Item className="panel lift"><h3>Budget</h3><div className="kpi num">{usd(job.budget)}</div><div className="hint">in vault as {job.vaultShares.toString()} shares</div></Item>
+        <Item><YieldTicker job={job} /></Item>
+        <Item className="panel lift"><h3>Settlement preview</h3>
+          <div className="num">principal {usd(job.settlement.principal)}</div>
+          <div className="num hint" style={{ marginTop: 4 }}>client +{usd(job.settlement.toClient)} · provider +{usd(job.settlement.toProvider)} · protocol +{usd(job.settlement.toProtocol)}</div>
+        </Item>
+        <Item className="panel lift"><h3>Parties</h3>
           <div>client <a href={addrUrl(job.client)} target="_blank" rel="noreferrer" className="mono">{short(job.client)}</a>{isClient && " (you)"}</div>
           <div>provider <Link href={`/providers/${job.provider}`} className="mono">{short(job.provider)}</Link>{isProvider && " (you)"} · agent #{job.providerAgentId.toString()}</div>
           <div>evaluator <a href={addrUrl(job.evaluator)} target="_blank" rel="noreferrer" className="mono">{short(job.evaluator)}</a> (contract: CRE + committee)</div>
           <div>hook <a href={addrUrl(job.hook)} target="_blank" rel="noreferrer" className="mono">{short(job.hook)}</a>{job.hook.toLowerCase() === deployment.compliantRouter.toLowerCase() ? " (compliance + SLA + reputation)" : job.hook.toLowerCase() === deployment.router.toLowerCase() ? " (SLA + reputation)" : ""}</div>
-        </div>
-      </div>
+        </Item>
+      </Stagger>
       <div className="grid two">
         <div className="panel">
           <h3>SLA terms (committed by the client, checked on chain)</h3>
@@ -116,7 +120,7 @@ export default function JobPage({ params }: { params: Promise<{ id: string }> })
             {isClient && job.status === "Open" && job.budget > 0n && <button disabled={busy} onClick={() => run("fund", () => accrue.fund(jobId))}>Fund → vault</button>}
             {isProvider && job.status === "Funded" && (
               <>
-                <input value={content} onChange={(e) => setContent(e.target.value)} placeholder="canonical deliverable body (hashed with keccak256)" />
+                <input value={content} onChange={(e) => setContent(e.target.value)} placeholder="canonical deliverable body (hashed with keccak256)" style={{ flex: "1 1 260px" }} />
                 <button disabled={busy || !content} onClick={() => run("submit", async () => accrue.submit(jobId, hashDeliverable(content), await accrue.publicClient.getBlockNumber()))}>Submit deliverable</button>
               </>
             )}
@@ -128,7 +132,7 @@ export default function JobPage({ params }: { params: Promise<{ id: string }> })
             )}
             {isCommittee && job.status === "Submitted" && (
               <>
-                <input value={hash} onChange={(e) => setHash(e.target.value)} placeholder={job.deliverable} />
+                <input value={hash} onChange={(e) => setHash(e.target.value)} placeholder={job.deliverable} style={{ flex: "1 1 260px" }} />
                 <button disabled={busy} onClick={() => run("attest OK", () => accrue.attest(jobId, (hash || job.deliverable) as `0x${string}`, true, "verified"))}>Attest OK</button>
                 <button disabled={busy} className="secondary" onClick={() => run("attest REJECT", () => accrue.attest(jobId, (hash || job.deliverable) as `0x${string}`, false, "hash-mismatch"))}>Attest REJECT</button>
               </>

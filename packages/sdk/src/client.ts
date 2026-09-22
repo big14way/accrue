@@ -22,6 +22,7 @@ import {
   toHex,
   zeroAddress,
 } from "viem";
+import type { ReadContractReturnType } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
 import {
@@ -189,83 +190,111 @@ export class Accrue {
   }
 
   async getJob(jobId: bigint): Promise<JobView> {
-    const d = this.deployment;
-    const [job, settlement, lock, hasTerms, lien] = await Promise.all([
-      this.publicClient.readContract({ address: d.escrow, abi: accrueEscrowAbi, functionName: "getJob", args: [jobId] }),
-      this.publicClient.readContract({ address: d.escrow, abi: accrueEscrowAbi, functionName: "previewSettlement", args: [jobId] }),
-      this.publicClient.readContract({ address: d.escrow, abi: accrueEscrowAbi, functionName: "payoutLock", args: [jobId] }),
-      this.publicClient.readContract({ address: d.slaHook, abi: sLAHookAbi, functionName: "hasTerms", args: [jobId] }),
-      this.publicClient.readContract({ address: d.advancePool, abi: advancePoolAbi, functionName: "lien", args: [jobId] }),
-    ]);
-    if (job.client === zeroAddress) throw new Error(`job ${jobId} does not exist`);
-    const view: JobView = {
-      id: jobId,
-      status: JOB_STATUS[job.status] ?? "Open",
-      client: job.client,
-      provider: job.provider,
-      providerAgentId: job.providerAgentId,
-      evaluator: job.evaluator,
-      hook: job.hook,
-      budget: job.budget,
-      budgetFormatted: formatUnits(job.budget, this.decimals),
-      expiredAt: Number(job.expiredAt),
-      submittedAt: Number(job.submittedAt),
-      deliverable: job.deliverable,
-      payoutReceiver: job.payoutReceiver,
-      payoutLock: lock,
-      vaultShares: job.vaultShares,
-      yieldPolicy: {
-        toClientBps: job.yieldPolicy.toClientBps,
-        toProviderBps: job.yieldPolicy.toProviderBps,
-        toProtocolBps: job.yieldPolicy.toProtocolBps,
-      },
-      description: job.description,
-      settlement: {
-        principal: settlement[0],
-        yieldAmount: settlement[1],
-        toClient: settlement[2],
-        toProvider: settlement[3],
-        toProtocol: settlement[4],
-      },
-    };
-    if (hasTerms) {
-      const [t, s] = await Promise.all([
-        this.publicClient.readContract({ address: d.slaHook, abi: sLAHookAbi, functionName: "terms", args: [jobId] }),
-        this.publicClient.readContract({ address: d.slaHook, abi: sLAHookAbi, functionName: "submission", args: [jobId] }),
-      ]);
-      view.terms = {
-        deadline: Number(t.deadline),
-        minFreshnessBlock: t.minFreshnessBlock,
-        deliverableCommitment: t.deliverableCommitment,
-        deliverableURI: t.deliverableURI,
-      };
-      if (s.submittedAt !== 0) {
-        view.submission = { freshnessBlock: s.freshnessBlock, submittedAt: Number(s.submittedAt), deliverable: s.deliverable };
-      }
-    }
-    if (lien.open || lien.principal > 0n) {
-      const [interestDue, amountDue] = await Promise.all([
-        this.publicClient.readContract({ address: d.advancePool, abi: advancePoolAbi, functionName: "interestDue", args: [jobId] }),
-        this.publicClient.readContract({ address: d.advancePool, abi: advancePoolAbi, functionName: "amountDue", args: [jobId] }),
-      ]);
-      view.lien = {
-        open: lien.open,
-        provider: lien.provider,
-        principal: lien.principal,
-        bond: lien.bond,
-        startBlock: lien.startBlock,
-        rateWadPerBlock: lien.rateWadPerBlock,
-        interestDue,
-        amountDue,
-      };
-    }
+    const [view] = await this.getJobs([jobId]);
     return view;
   }
 
-  async listJobs(from = 1n, to?: bigint): Promise<JobView[]> {
+  /**
+   * Every read a JobView needs, for every id, in one Multicall3 `eth_call` (nine calls per job
+   * folded into one request). The public RPCs meter individual calls, so this is what keeps a
+   * page of jobs to a handful of requests instead of two hundred.
+   */
+  async getJobs(ids: bigint[]): Promise<JobView[]> {
+    if (ids.length === 0) return [];
+    const d = this.deployment;
+    const N = 9;
+    const contracts = ids.flatMap((jobId) => [
+      { address: d.escrow, abi: accrueEscrowAbi, functionName: "getJob", args: [jobId] },
+      { address: d.escrow, abi: accrueEscrowAbi, functionName: "previewSettlement", args: [jobId] },
+      { address: d.escrow, abi: accrueEscrowAbi, functionName: "payoutLock", args: [jobId] },
+      { address: d.slaHook, abi: sLAHookAbi, functionName: "hasTerms", args: [jobId] },
+      { address: d.slaHook, abi: sLAHookAbi, functionName: "terms", args: [jobId] },
+      { address: d.slaHook, abi: sLAHookAbi, functionName: "submission", args: [jobId] },
+      { address: d.advancePool, abi: advancePoolAbi, functionName: "lien", args: [jobId] },
+      { address: d.advancePool, abi: advancePoolAbi, functionName: "interestDue", args: [jobId] },
+      { address: d.advancePool, abi: advancePoolAbi, functionName: "amountDue", args: [jobId] },
+    ]);
+    const res = await this.publicClient.multicall({ contracts: contracts as any, allowFailure: true, batchSize: 24_576 });
+    type Job = ReadContractReturnType<typeof accrueEscrowAbi, "getJob">;
+    type Settlement = ReadContractReturnType<typeof accrueEscrowAbi, "previewSettlement">;
+    type Terms = ReadContractReturnType<typeof sLAHookAbi, "terms">;
+    type Submission = ReadContractReturnType<typeof sLAHookAbi, "submission">;
+    type Lien = ReadContractReturnType<typeof advancePoolAbi, "lien">;
+    return ids.map((jobId, i) => {
+      const r = res.slice(i * N, (i + 1) * N);
+      const got = <T,>(k: number): T | undefined => (r[k]?.status === "success" ? (r[k].result as T) : undefined);
+      const job = got<Job>(0);
+      if (!job || job.client === zeroAddress) throw new Error(`job ${jobId} does not exist`);
+      const settlement = got<Settlement>(1) ?? [job.budget, 0n, 0n, 0n, 0n];
+      const lock = got<Address>(2) ?? zeroAddress;
+      const hasTerms = got<boolean>(3) ?? false;
+      const lien = got<Lien>(6);
+      const view: JobView = {
+        id: jobId,
+        status: JOB_STATUS[job.status] ?? "Open",
+        client: job.client,
+        provider: job.provider,
+        providerAgentId: job.providerAgentId,
+        evaluator: job.evaluator,
+        hook: job.hook,
+        budget: job.budget,
+        budgetFormatted: formatUnits(job.budget, this.decimals),
+        expiredAt: Number(job.expiredAt),
+        submittedAt: Number(job.submittedAt),
+        deliverable: job.deliverable,
+        payoutReceiver: job.payoutReceiver,
+        payoutLock: lock,
+        vaultShares: job.vaultShares,
+        yieldPolicy: {
+          toClientBps: job.yieldPolicy.toClientBps,
+          toProviderBps: job.yieldPolicy.toProviderBps,
+          toProtocolBps: job.yieldPolicy.toProtocolBps,
+        },
+        description: job.description,
+        settlement: {
+          principal: settlement[0],
+          yieldAmount: settlement[1],
+          toClient: settlement[2],
+          toProvider: settlement[3],
+          toProtocol: settlement[4],
+        },
+      };
+      const t = got<Terms>(4);
+      const sub = got<Submission>(5);
+      if (hasTerms && t) {
+        view.terms = {
+          deadline: Number(t.deadline),
+          minFreshnessBlock: t.minFreshnessBlock,
+          deliverableCommitment: t.deliverableCommitment,
+          deliverableURI: t.deliverableURI,
+        };
+        if (sub && sub.submittedAt !== 0) {
+          view.submission = { freshnessBlock: sub.freshnessBlock, submittedAt: Number(sub.submittedAt), deliverable: sub.deliverable };
+        }
+      }
+      if (lien && (lien.open || lien.principal > 0n)) {
+        view.lien = {
+          open: lien.open,
+          provider: lien.provider,
+          principal: lien.principal,
+          bond: lien.bond,
+          startBlock: lien.startBlock,
+          rateWadPerBlock: lien.rateWadPerBlock,
+          interestDue: got<bigint>(7) ?? 0n,
+          amountDue: got<bigint>(8) ?? lien.principal,
+        };
+      }
+      return view;
+    });
+  }
+
+  /** Jobs `from..to` inclusive, in pages of 25 multicalls' worth. */
+  async listJobs(from = 1n, to?: bigint, pageSize = 25): Promise<JobView[]> {
     const last = to ?? (await this.jobCount());
+    const ids: bigint[] = [];
+    for (let i = from; i <= last; i++) ids.push(i);
     const out: JobView[] = [];
-    for (let i = from; i <= last; i++) out.push(await this.getJob(i));
+    for (let i = 0; i < ids.length; i += pageSize) out.push(...(await this.getJobs(ids.slice(i, i + pageSize))));
     return out;
   }
 
@@ -311,19 +340,11 @@ export class Accrue {
 
   async poolStats() {
     const d = this.deployment;
-    const [totalAssets, cash, outstanding, bonds, interest, shortfall, advances, defaults, util, cap, supply] = await Promise.all([
-      this.publicClient.readContract({ address: d.advancePool, abi: advancePoolAbi, functionName: "totalAssets" }),
-      this.publicClient.readContract({ address: d.advancePool, abi: advancePoolAbi, functionName: "cash" }),
-      this.publicClient.readContract({ address: d.advancePool, abi: advancePoolAbi, functionName: "outstandingPrincipal" }),
-      this.publicClient.readContract({ address: d.advancePool, abi: advancePoolAbi, functionName: "totalBonds" }),
-      this.publicClient.readContract({ address: d.advancePool, abi: advancePoolAbi, functionName: "realisedInterest" }),
-      this.publicClient.readContract({ address: d.advancePool, abi: advancePoolAbi, functionName: "totalShortfall" }),
-      this.publicClient.readContract({ address: d.advancePool, abi: advancePoolAbi, functionName: "advancesCount" }),
-      this.publicClient.readContract({ address: d.advancePool, abi: advancePoolAbi, functionName: "defaultsCount" }),
-      this.publicClient.readContract({ address: d.advancePool, abi: advancePoolAbi, functionName: "utilisationBps" }),
-      this.publicClient.readContract({ address: d.advancePool, abi: advancePoolAbi, functionName: "maxOutstanding" }),
-      this.publicClient.readContract({ address: d.advancePool, abi: advancePoolAbi, functionName: "totalSupply" }),
-    ]);
+    const c = <F extends string>(functionName: F) => ({ address: d.advancePool, abi: advancePoolAbi, functionName }) as const;
+    const [totalAssets, cash, outstanding, bonds, interest, shortfall, advances, defaults, util, cap, supply] = await this.publicClient.multicall({
+      contracts: [c("totalAssets"), c("cash"), c("outstandingPrincipal"), c("totalBonds"), c("realisedInterest"), c("totalShortfall"), c("advancesCount"), c("defaultsCount"), c("utilisationBps"), c("maxOutstanding"), c("totalSupply")],
+      allowFailure: false,
+    });
     return {
       totalAssets,
       cash,
@@ -343,17 +364,19 @@ export class Accrue {
   async vaultStats() {
     const d = this.deployment;
     if (d.vault === zeroAddress) return undefined;
-    const [totalAssets, escrowShares] = await Promise.all([
-      this.publicClient.readContract({ address: d.vault, abi: erc4626Abi, functionName: "totalAssets" }),
-      this.publicClient.readContract({ address: d.vault, abi: erc4626Abi, functionName: "balanceOf", args: [d.escrow] }),
-    ]);
+    const [ta, shares, rate] = await this.publicClient.multicall({
+      contracts: [
+        { address: d.vault, abi: erc4626Abi, functionName: "totalAssets" },
+        { address: d.vault, abi: erc4626Abi, functionName: "balanceOf", args: [d.escrow] },
+        { address: d.vault, abi: mockYieldVaultAbi, functionName: "ratePerBlockWad" }, // absent on a real vault
+      ],
+      allowFailure: true,
+    });
+    if (ta.status !== "success" || shares.status !== "success") throw new Error("vault reads failed");
+    const totalAssets = ta.result;
+    const escrowShares = shares.result;
     const escrowAssets = await this.publicClient.readContract({ address: d.vault, abi: erc4626Abi, functionName: "previewRedeem", args: [escrowShares] });
-    let ratePerBlockWad: bigint | undefined;
-    try {
-      ratePerBlockWad = await this.publicClient.readContract({ address: d.vault, abi: mockYieldVaultAbi, functionName: "ratePerBlockWad" });
-    } catch {
-      /* not the mock */
-    }
+    const ratePerBlockWad: bigint | undefined = rate.status === "success" ? rate.result : undefined;
     return { totalAssets, escrowShares, escrowAssets, ratePerBlockWad };
   }
 

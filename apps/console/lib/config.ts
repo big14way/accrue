@@ -2,13 +2,15 @@ import { monad, monadTestnet, EXPLORERS, RPC_FALLBACKS } from "@accrue/sdk";
 import type { Deployment } from "@accrue/sdk";
 import testnet from "./deployment.json";
 
-export const CHAIN_ID = Number(process.env.NEXT_PUBLIC_CHAIN_ID ?? 10143);
+export const CHAIN_ID = Number(process.env.NEXT_PUBLIC_CHAIN_ID || 10143);
 export const chain = CHAIN_ID === 143 ? monad : monadTestnet;
-export const RPC = process.env.NEXT_PUBLIC_MONAD_RPC ?? RPC_FALLBACKS[CHAIN_ID]?.[0] ?? chain.rpcUrls.default.http[0];
+// `||`, not `??`: an env var set to "" on the host must still fall back to the public RPC.
+export const RPC = process.env.NEXT_PUBLIC_MONAD_RPC || RPC_FALLBACKS[CHAIN_ID]?.[0] || chain.rpcUrls.default.http[0];
 export const ENVIO = process.env.NEXT_PUBLIC_ENVIO_GRAPHQL ?? "";
 export const PRIVY_APP_ID = process.env.NEXT_PUBLIC_PRIVY_APP_ID ?? "";
 export const PROVIDERS_URL = process.env.NEXT_PUBLIC_PROVIDERS_URL ?? "http://localhost:4020";
 export const EXPLORER = EXPLORERS[CHAIN_ID];
+export const DEMO_AGENT_ID = BigInt(process.env.NEXT_PUBLIC_DEMO_AGENT_ID || 1891);
 
 export const deployment = testnet as unknown as Deployment;
 

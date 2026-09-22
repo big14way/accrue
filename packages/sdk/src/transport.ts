@@ -3,17 +3,24 @@ import { custom, http, type Transport } from "viem";
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /**
- * `http` transport with a client-side rate limit and a retry on the public Monad RPCs'
- * "requests limited to 15/sec" (code -32011), which viem does not retry by itself. A single
- * stats read fans out into a dozen `eth_call`s; without this the console and the drills trip
- * the limit on the first poll.
+ * `http` transport that adapts to the public Monad RPCs' rate limit. Calls go out unthrottled
+ * until an endpoint answers "requests limited to N/sec" (code -32011, which viem does not
+ * retry); from then on, for a cooling period, calls are spread to `perSecond` and the
+ * refused call is retried instead of failing the read. A single stats read fans out into a
+ * dozen `eth_call`s, so without this the console and the drills trip the limit on the first
+ * poll of the strictest endpoint, while the more generous endpoints stay fast.
+ *
+ * No JSON-RPC batching: the endpoints count every call inside a batch anyway, and some of
+ * them reject batch bodies from browsers outright.
  */
-export function rateLimited(url: string, perSecond = 12, timeout = 15_000): Transport {
-  const inner = http(url, { timeout, batch: { wait: 16, batchSize: 50 } });
+export function rateLimited(url: string, perSecond = 12, timeout = 15_000, coolingMs = 60_000): Transport {
+  const inner = http(url, { timeout });
   let stamps: number[] = [];
+  let limitedUntil = 0;
   const take = async () => {
     for (;;) {
       const now = Date.now();
+      if (now >= limitedUntil) return;
       stamps = stamps.filter((t) => now - t < 1000);
       if (stamps.length < perSecond) {
         stamps.push(now);
@@ -22,10 +29,11 @@ export function rateLimited(url: string, perSecond = 12, timeout = 15_000): Tran
       await sleep(1000 - (now - stamps[0]) + 5);
     }
   };
-  const limited = (e: any) => {
+  const isLimit = (e: any) => {
     const code = e?.code ?? e?.cause?.code ?? e?.cause?.cause?.code;
+    const status = e?.status ?? e?.cause?.status ?? e?.cause?.cause?.status;
     const msg = String(e?.details ?? e?.cause?.details ?? e?.message ?? "");
-    return code === -32011 || code === 429 || /limited to \d+\/sec|rate limit/i.test(msg);
+    return code === -32011 || status === 429 || /limited to \d+\/sec|rate limit/i.test(msg);
   };
   return (cfg) => {
     const t = inner(cfg);
@@ -37,8 +45,9 @@ export function rateLimited(url: string, perSecond = 12, timeout = 15_000): Tran
             try {
               return await t.request({ method, params } as any);
             } catch (e) {
-              if (attempt < 5 && limited(e)) {
-                await sleep(400 * (attempt + 1));
+              if (attempt < 6 && isLimit(e)) {
+                limitedUntil = Date.now() + coolingMs;
+                await sleep(250 * (attempt + 1));
                 continue;
               }
               throw e;
@@ -46,7 +55,7 @@ export function rateLimited(url: string, perSecond = 12, timeout = 15_000): Tran
           }
         },
       },
-      { retryCount: 0, name: "rateLimitedHttp", key: "rateLimitedHttp" },
+      { retryCount: 0, name: "adaptiveHttp", key: "adaptiveHttp" },
     )(cfg);
   };
 }

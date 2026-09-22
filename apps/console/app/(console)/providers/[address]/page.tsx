@@ -6,6 +6,7 @@ import { useJobs } from "@/lib/useJobs";
 import { gql, Q_PROVIDER } from "@/lib/envio";
 import { usd, pct, ts, short, addrUrl, deployment, ENVIO } from "@/lib/config";
 import { Status } from "@/components/JobTable";
+import { Reveal, Stagger, Item } from "@/components/motion";
 
 export default function ProviderPage({ params }: { params: Promise<{ address: string }> }) {
   const { address } = use(params);
@@ -31,13 +32,15 @@ export default function ProviderPage({ params }: { params: Promise<{ address: st
   const p = envio?.Provider?.[0];
   return (
     <div className="stack">
-      <div className="row"><h1 style={{ margin: 0 }}>Provider</h1><a href={addrUrl(address)} target="_blank" rel="noreferrer" className="mono">{address}</a></div>
-      <div className="grid">
-        <div className="panel"><h3>ERC-8004 agent</h3><div className="kpi num">{agentId > 0n ? `#${agentId}` : "unregistered"}</div><div className="hint">reputation written by <a href={addrUrl(deployment.reputationHook)} target="_blank" rel="noreferrer">ReputationHook</a>{rep ? ` · ${rep.count} entries · mean ${rep.mean.toFixed(1)}` : ""}</div></div>
-        <div className="panel"><h3>Advance limit</h3><div className="kpi num">{score ? pct(score.maxAdvanceBps) : "…"}<small>of job budget</small></div></div>
-        <div className="panel"><h3>Rate</h3><div className="kpi num">{score ? pct(score.aprBps) : "…"}<small>APR, charged per 400 ms block</small></div></div>
-        <div className="panel"><h3>Bond</h3><div className="kpi num">{score ? pct(score.bondBps) : "…"}<small>of the advance</small></div></div>
-      </div>
+      <Reveal>
+        <div className="page-head"><div><span className="eyebrow">Provider</span><h1 style={{ marginBottom: 4 }}>{agentId > 0n ? `ERC-8004 agent #${agentId}` : "Unregistered provider"}</h1><a href={addrUrl(address)} target="_blank" rel="noreferrer" className="mono hint" style={{ wordBreak: "break-all" }}>{address} ↗</a></div></div>
+      </Reveal>
+      <Stagger className="grid">
+        <Item className="panel lift"><h3>ERC-8004 agent</h3><div className="kpi num">{agentId > 0n ? `#${agentId}` : "unregistered"}</div><div className="hint">reputation written by <a href={addrUrl(deployment.reputationHook)} target="_blank" rel="noreferrer">ReputationHook</a>{rep ? ` · ${rep.count} entries · mean ${rep.mean.toFixed(1)}` : ""}</div></Item>
+        <Item className="panel lift"><h3>Advance limit</h3><div className="kpi num">{score ? pct(score.maxAdvanceBps) : "…"}<small>of job budget</small></div></Item>
+        <Item className="panel lift"><h3>Rate</h3><div className="kpi num">{score ? pct(score.aprBps) : "…"}<small>APR, per 400 ms block</small></div></Item>
+        <Item className="panel lift"><h3>Bond</h3><div className="kpi num">{score ? pct(score.bondBps) : "…"}<small>of the advance</small></div></Item>
+      </Stagger>
       <div className="grid two">
         <div className="panel">
           <h3>Credit score — every input is on chain</h3>
@@ -73,10 +76,10 @@ export default function ProviderPage({ params }: { params: Promise<{ address: st
       <div className="panel">
         <h3>Jobs</h3>
         {mine.length ? (
-          <table>
+          <div className="table-wrap"><table>
             <thead><tr><th>#</th><th>Status</th><th>Budget</th><th>Deadline</th><th>Provider yield share</th></tr></thead>
             <tbody>{mine.map((j) => <tr key={j.id.toString()}><td><Link href={`/jobs/${j.id}`}>#{j.id.toString()}</Link></td><td><Status s={j.status} /></td><td className="num">{usd(j.budget)}</td><td className="muted">{j.terms ? ts(j.terms.deadline) : "—"}</td><td className="num">{j.yieldPolicy.toProviderBps / 100} %</td></tr>)}</tbody>
-          </table>
+          </table></div>
         ) : <p className="muted">no jobs for this address in the recent window</p>}
       </div>
     </div>

@@ -6,6 +6,7 @@ import { readOnly } from "@/lib/chain";
 import { gql, Q_POOL } from "@/lib/envio";
 import { usd, pct, ts, txUrl, short, deployment, addrUrl, ENVIO } from "@/lib/config";
 import { parseUsd } from "@accrue/sdk";
+import { Reveal, Stagger, Item } from "@/components/motion";
 
 type Stats = Awaited<ReturnType<ReturnType<typeof readOnly>["poolStats"]>>;
 
@@ -43,23 +44,29 @@ export default function Pool() {
       setBusy(false);
     }
   };
-  const realisedApy = s && envio?.PoolStats?.[0]?.updatedAt ? undefined : undefined;
   return (
     <div className="stack">
-      <div className="row"><h1 style={{ margin: 0 }}>Advance pool</h1><span className="hint">ERC-4626 · <a href={addrUrl(deployment.advancePool)} target="_blank" rel="noreferrer" className="mono">{short(deployment.advancePool)}</a> · cap {s ? usd(s.cap) : "…"}</span></div>
-      <p className="muted">Lenders fund receivables advances to providers with funded jobs. Terms are priced from ERC-8004 history by <code>CreditScorer</code>. The escrow repays the pool first at completion; rejections are covered by the provider's bond and any principal shortfall is recorded here and on the provider's ERC-8004 record. Undercollateralised by design — priced, not eliminated.</p>
-      <div className="grid">
-        <div className="panel"><h3>Total assets</h3><div className="kpi num">{s ? usd(s.totalAssets) : "…"}</div><div className="hint">cash {s ? usd(s.cash) : ""} + outstanding {s ? usd(s.outstandingPrincipal) : ""}</div></div>
-        <div className="panel"><h3>Utilisation</h3><div className="kpi num">{s ? pct(s.utilisationBps) : "…"}</div><div className="bar"><span style={{ width: `${s ? s.utilisationBps / 100 : 0}%` }} /></div></div>
-        <div className="panel"><h3>Realised interest</h3><div className="kpi num good">{s ? `+${usd(s.realisedInterest)}` : "…"}</div><div className="hint">{s?.advancesCount} advances · {s?.defaultsCount} defaults</div></div>
-        <div className="panel"><h3>Principal shortfall</h3><div className={`kpi num ${s && s.totalShortfall > 0n ? "bad" : ""}`}>{s ? usd(s.totalShortfall) : "…"}</div><div className="hint">bonds held apart: {s ? usd(s.totalBonds) : ""}</div></div>
-        <div className="panel"><h3>Share price</h3><div className="kpi num">{s ? s.sharePrice.toFixed(6) : "…"}</div><div className="hint">assets / aUSD supply {s ? usd(s.shareSupply) : ""}</div></div>
-      </div>
+      <Reveal>
+        <div className="page-head">
+          <div>
+            <span className="eyebrow">Advance pool · ERC-4626 · <a href={addrUrl(deployment.advancePool)} target="_blank" rel="noreferrer" className="mono">{short(deployment.advancePool)}</a> · cap {s ? usd(s.cap) : "…"}</span>
+            <h1>Receivables advances, priced on on-chain credit history.</h1>
+            <p className="muted">Lenders fund advances to providers with funded jobs. Terms come from <code>CreditScorer</code> over ERC-8004 history. The escrow repays the pool first at completion; rejections are covered by the provider's bond and any principal shortfall is recorded here and on the provider's ERC-8004 record. Undercollateralised by design: priced, not eliminated.</p>
+          </div>
+        </div>
+      </Reveal>
+      <Stagger className="grid">
+        <Item className="panel lift"><h3>Total assets</h3><div className="kpi num">{s ? usd(s.totalAssets) : "…"}</div><div className="hint">cash {s ? usd(s.cash) : ""} + outstanding {s ? usd(s.outstandingPrincipal) : ""}</div></Item>
+        <Item className="panel lift"><h3>Utilisation</h3><div className="kpi num">{s ? pct(s.utilisationBps) : "…"}</div><div className="bar"><span style={{ width: `${s ? s.utilisationBps / 100 : 0}%` }} /></div></Item>
+        <Item className="panel lift"><h3>Realised interest</h3><div className="kpi num good">{s ? `+${usd(s.realisedInterest)}` : "…"}</div><div className="hint">{s?.advancesCount} advances · {s?.defaultsCount} defaults</div></Item>
+        <Item className="panel lift"><h3>Principal shortfall</h3><div className={`kpi num ${s && s.totalShortfall > 0n ? "bad" : ""}`}>{s ? usd(s.totalShortfall) : "…"}</div><div className="hint">bonds held apart: {s ? usd(s.totalBonds) : ""}</div></Item>
+        <Item className="panel lift"><h3>Share price</h3><div className="kpi num">{s ? s.sharePrice.toFixed(6) : "…"}</div><div className="hint">assets / aUSD supply {s ? usd(s.shareSupply) : ""}</div></Item>
+      </Stagger>
       {canWrite && (
         <div className="panel">
           <h3>Lend</h3>
           <div className="row">
-            <input value={amt} onChange={(e) => setAmt(e.target.value)} style={{ width: 140 }} />
+            <input value={amt} onChange={(e) => setAmt(e.target.value)} style={{ width: 140 }} inputMode="decimal" />
             <button disabled={busy} onClick={() => run("deposit", () => accrue.lend(parseUsd(amt)))}>Deposit</button>
             <button disabled={busy} className="secondary" onClick={() => run("withdraw", () => accrue.redeem(parseUsd(amt)))}>Withdraw</button>
             <span className="hint">your withdrawable: {mine !== undefined ? usd(mine) : "—"} (capped by pool cash)</span>
@@ -70,7 +77,7 @@ export default function Pool() {
       <div className="panel">
         <h3>Liens {ENVIO ? "" : "(start Envio to see history)"}</h3>
         {envio?.Lien?.length ? (
-          <table>
+          <div className="table-wrap"><table>
             <thead><tr><th>Job</th><th>Provider</th><th>Principal</th><th>Bond</th><th>Limit</th><th>Opened</th><th>Outcome</th><th>Interest</th><th>Shortfall</th></tr></thead>
             <tbody>
               {envio.Lien.map((l: any) => (
@@ -87,20 +94,20 @@ export default function Pool() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         ) : <p className="muted">no liens indexed</p>}
       </div>
       <div className="panel">
         <h3>Pool activity</h3>
         {envio?.PoolSnapshot?.length ? (
-          <table>
+          <div className="table-wrap"><table>
             <thead><tr><th>When</th><th>Kind</th><th>Actor</th><th>Assets</th><th>Δ outstanding</th><th>Δ interest</th><th>Δ shortfall</th><th>Tx</th></tr></thead>
             <tbody>
               {envio.PoolSnapshot.map((p: any) => (
                 <tr key={p.id}><td className="muted">{ts(p.timestamp)}</td><td>{p.kind}</td><td className="mono">{short(p.actor)}</td><td className="num">{usd(p.assets)}</td><td className="num">{usd(p.outstandingDelta)}</td><td className="num good">{usd(p.interestDelta)}</td><td className="num bad">{usd(p.shortfallDelta)}</td><td><a href={txUrl(p.txHash)} target="_blank" rel="noreferrer">↗</a></td></tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         ) : <p className="muted">no activity indexed</p>}
       </div>
     </div>

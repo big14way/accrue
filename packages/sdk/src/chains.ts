@@ -6,9 +6,13 @@ export { monad, monadTestnet };
 /** Local Anvil for end-to-end runs (port 8546 so it never collides with a default node). */
 export const anvilLocal: Chain = { ...anvil, rpcUrls: { default: { http: ["http://127.0.0.1:8546"] } } };
 
+/** Multicall3 is deployed at its canonical address on both Monad networks; the SDK reads through it so a page of jobs is one eth_call. */
+const MULTICALL3 = { address: "0xcA11bde05977b3631167028862bE2a173976CA11" as Address };
+const withMulticall = (c: Chain): Chain => ({ ...c, contracts: { ...c.contracts, multicall3: c.contracts?.multicall3 ?? MULTICALL3 } });
+
 export const CHAINS: Record<number, Chain> = {
-  [monadTestnet.id]: monadTestnet,
-  [monad.id]: monad,
+  [monadTestnet.id]: withMulticall(monadTestnet),
+  [monad.id]: withMulticall(monad),
   [anvilLocal.id]: anvilLocal,
 };
 

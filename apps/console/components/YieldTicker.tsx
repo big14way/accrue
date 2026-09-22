@@ -26,8 +26,8 @@ export function YieldTicker({ job }: { job: JobView }) {
   }, [job.status, last, rate]);
   const live = job.status === "Funded" || job.status === "Submitted";
   return (
-    <div className="panel">
-      <h3>{live ? "Yield accruing now" : "Yield realised"}</h3>
+    <div className="panel lift">
+      <h3>{live && <span className="live-dot" style={{ marginRight: 8 }} />}{live ? "Yield accruing now" : "Yield realised"}</h3>
       <div className="kpi num good">
         +{usd(live ? display : job.settlement.yieldAmount)} <small>on {usd(job.budget)} escrowed</small>
       </div>

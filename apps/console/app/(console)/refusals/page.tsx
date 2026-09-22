@@ -5,6 +5,7 @@ import { useJobs } from "@/lib/useJobs";
 import { gql, Q_REFUSALS } from "@/lib/envio";
 import { usd, ts, txUrl, short, ENVIO } from "@/lib/config";
 import { Status } from "@/components/JobTable";
+import { Reveal } from "@/components/motion";
 
 const REASONS: Record<string, string> = {
   "sla:deadline": "Provider missed the SLA deadline; anyone enforced it and the client was refunded.",
@@ -33,11 +34,12 @@ export default function Refusals() {
   const refused = jobs.filter((j) => j.status === "Rejected" || j.status === "Expired");
   return (
     <div className="stack">
-      <h1>Refusals</h1>
-      <p className="muted">Every rejection and expiry, with the decoded reason and the transaction. Stale and late submissions never make it on chain at all: they revert in the provider's own transaction (<code>StaleData</code>, <code>DeadlinePassed</code>); the drills page links those reverted transactions.</p>
+      <Reveal>
+        <div className="page-head"><div><span className="eyebrow">Refusals</span><h1>Every rejection and expiry, with the reason and the transaction.</h1><p className="muted">Stale and late submissions never make it on chain at all: they revert in the provider's own transaction (<code>StaleData</code>, <code>DeadlinePassed</code>); the drills page links those reverted transactions.</p></div></div>
+      </Reveal>
       <div className="panel">
         {refused.length ? (
-          <table>
+          <div className="table-wrap"><table>
             <thead><tr><th>Job</th><th>Status</th><th>Budget</th><th>Provider</th><th>Reason</th><th>Refunded</th><th>Tx</th></tr></thead>
             <tbody>
               {refused.map((j) => {
@@ -55,16 +57,16 @@ export default function Refusals() {
                 );
               })}
             </tbody>
-          </table>
+          </table></div>
         ) : <p className="muted">no refusals yet</p>}
       </div>
       {envio?.Attestation?.length > 0 && (
         <div className="panel">
           <h3>Negative attestations</h3>
-          <table>
+          <div className="table-wrap"><table>
             <thead><tr><th>Job</th><th>Source</th><th>Reason</th><th>When</th><th>Tx</th></tr></thead>
             <tbody>{envio.Attestation.map((a: any) => <tr key={a.txHash}><td><Link href={`/jobs/${a.job_id}`}>#{a.job_id}</Link></td><td>{a.source}</td><td>{decode(a.reason)}</td><td className="muted">{ts(a.timestamp)}</td><td><a href={txUrl(a.txHash)} target="_blank" rel="noreferrer">↗</a></td></tr>)}</tbody>
-          </table>
+          </table></div>
         </div>
       )}
     </div>

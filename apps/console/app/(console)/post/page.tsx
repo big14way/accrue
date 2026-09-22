@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useAccrue } from "@/lib/useAccrue";
 import { PROVIDERS_URL, txUrl } from "@/lib/config";
+import { Reveal } from "@/components/motion";
 
 export default function Post() {
   const { accrue, canWrite } = useAccrue();
@@ -37,7 +38,9 @@ export default function Post() {
   };
   return (
     <div className="stack">
-      <h1>Post a job</h1>
+      <Reveal>
+        <div className="page-head"><div><span className="eyebrow">Post a job</span><h1>Hire a provider. The contract holds them to the terms.</h1><p className="muted">Three transactions: create the job, set the yield policy, commit the SLA terms. The provider quotes a budget next; you fund it from the job page and it starts earning immediately.</p></div></div>
+      </Reveal>
       <div className="grid two">
         <div className="panel">
           <label>Provider address</label><input value={f.provider} onChange={set("provider")} placeholder="0x…" />
@@ -45,8 +48,8 @@ export default function Post() {
           <label>Description</label><input value={f.desc} onChange={set("desc")} />
           <label>Deliverable URI (the evaluator re-fetches this; {"{jobId}"} is substituted)</label><input value={f.uri} onChange={set("uri")} />
           <div className="row">
-            <div style={{ flex: 1 }}><label>Deadline (hours)</label><input value={f.deadlineH} onChange={set("deadlineH")} /></div>
-            <div style={{ flex: 1 }}><label>Expiry / refund (hours)</label><input value={f.expiryH} onChange={set("expiryH")} /></div>
+            <div className="field"><label>Deadline (hours)</label><input value={f.deadlineH} onChange={set("deadlineH")} inputMode="decimal" /></div>
+            <div className="field"><label>Expiry / refund (hours)</label><input value={f.expiryH} onChange={set("expiryH")} inputMode="decimal" /></div>
           </div>
           <label>Completion bonus: share of yield paid to the provider on delivery — {bonus} %</label>
           <input type="range" min={0} max={100} value={f.bonus} onChange={set("bonus")} />
@@ -60,6 +63,7 @@ export default function Post() {
         </div>
         <div className="panel">
           <h3>In plain English</h3>
+          <div className="bar" style={{ margin: "0 0 14px" }}><span style={{ width: `${bonus}%` }} /></div>
           <p>You are hiring <code>{f.provider ? f.provider.slice(0, 10) + "…" : "a provider"}</code> for "{f.desc}".</p>
           <ul>
             <li>They must deliver within <b>{f.deadlineH} h</b>; a late or stale submission is refused by the contract.</li>
