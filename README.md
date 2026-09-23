@@ -81,26 +81,26 @@ anyone ── enforceDeadline() after a missed deadline; claimRefund() after exp
 
 ## Deployments
 
-### Monad testnet (chain 10143) — deployed at block 63929211, all contracts verified on Sourcify
+### Monad testnet (chain 10143) — deployed at block 64964439, all contracts verified on Sourcify
 
 | Contract | Address |
 |---|---|
-| AccrueEscrow | [`0xF39D05c6DBf186c2c1DC17392C642394F54DC171`](https://testnet.monadexplorer.com/address/0xF39D05c6DBf186c2c1DC17392C642394F54DC171) |
-| SLAHook | [`0xE4D6aB90dDc13798ccC59f01c4e61016523820fd`](https://testnet.monadexplorer.com/address/0xE4D6aB90dDc13798ccC59f01c4e61016523820fd) |
-| ReputationHook | [`0xCf3088f95D67926F4399C00251533614Dc132948`](https://testnet.monadexplorer.com/address/0xCf3088f95D67926F4399C00251533614Dc132948) |
-| HookRouter (SLA + reputation) | [`0x1d18B947BEd5B339A00805173cD15a7f211B48a3`](https://testnet.monadexplorer.com/address/0x1d18B947BEd5B339A00805173cD15a7f211B48a3) |
-| ComplianceHook | [`0x1AF18e6c004EDB640D32d95A8f317b9904Ef8D48`](https://testnet.monadexplorer.com/address/0x1AF18e6c004EDB640D32d95A8f317b9904Ef8D48) |
-| CredentialRegistry | [`0x40097F76CAD6854499DC533Cb74158cf8082D8Bb`](https://testnet.monadexplorer.com/address/0x40097F76CAD6854499DC533Cb74158cf8082D8Bb) |
-| HookRouter (compliance + SLA + reputation) | [`0xD282D7c8B19F2CCbe920e497B639BD5Af5aB6Bb3`](https://testnet.monadexplorer.com/address/0xD282D7c8B19F2CCbe920e497B639BD5Af5aB6Bb3) |
-| Evaluator (CRE + committee) | [`0x2d3a77a7A026d7ce1547fd8eE706309eAC404943`](https://testnet.monadexplorer.com/address/0x2d3a77a7A026d7ce1547fd8eE706309eAC404943) |
-| CreditScorer | [`0x6c9fFd452238C627eb4e0fe746E01bade2f3e862`](https://testnet.monadexplorer.com/address/0x6c9fFd452238C627eb4e0fe746E01bade2f3e862) |
-| AdvancePool | [`0x3877Adf5F35f68cEFB1804785e1C050959383407`](https://testnet.monadexplorer.com/address/0x3877Adf5F35f68cEFB1804785e1C050959383407) |
-| MockYieldVault (6.8 % APR) | [`0x4fA031F8C9134A3801C589Ac2021e7904654aB7D`](https://testnet.monadexplorer.com/address/0x4fA031F8C9134A3801C589Ac2021e7904654aB7D) |
-| Test dollar (mintable) | [`0x449dF56DE4913586AaBBDEe7159acaCf8170abdb`](https://testnet.monadexplorer.com/address/0x449dF56DE4913586AaBBDEe7159acaCf8170abdb) |
+| AccrueEscrow | [`0x44F29EEF182180B8ae93dc6765f20eC9B3Ee7366`](https://testnet.monadexplorer.com/address/0x44F29EEF182180B8ae93dc6765f20eC9B3Ee7366) |
+| SLAHook | [`0x6c38A0C389048CE3448CA52eb40ce3b1870eDc0c`](https://testnet.monadexplorer.com/address/0x6c38A0C389048CE3448CA52eb40ce3b1870eDc0c) |
+| ReputationHook | [`0x9Ed3DaEB695dF05d11b3C9EA6Feebb0fDb550e52`](https://testnet.monadexplorer.com/address/0x9Ed3DaEB695dF05d11b3C9EA6Feebb0fDb550e52) |
+| HookRouter (SLA + reputation) | [`0x3532Dd448b9Fc8112Dfae8701C3D23045D28C048`](https://testnet.monadexplorer.com/address/0x3532Dd448b9Fc8112Dfae8701C3D23045D28C048) |
+| ComplianceHook | [`0xd37383Db23247BA7A58da4F281B6F47722B0B087`](https://testnet.monadexplorer.com/address/0xd37383Db23247BA7A58da4F281B6F47722B0B087) |
+| CredentialRegistry | [`0x4957260bc031834D1F575F072F2E7abA0F85f866`](https://testnet.monadexplorer.com/address/0x4957260bc031834D1F575F072F2E7abA0F85f866) |
+| HookRouter (compliance + SLA + reputation) | [`0xe53Aa986903be4a2942742d874B7f0723fE2DF12`](https://testnet.monadexplorer.com/address/0xe53Aa986903be4a2942742d874B7f0723fE2DF12) |
+| Evaluator (CRE + committee) | [`0x84d977302De3241b45BbA77A6C27321e5DcA3a2A`](https://testnet.monadexplorer.com/address/0x84d977302De3241b45BbA77A6C27321e5DcA3a2A) |
+| CreditScorer | [`0x0856Cd9112cb42ca2B1671264B49b736d8afaBc3`](https://testnet.monadexplorer.com/address/0x0856Cd9112cb42ca2B1671264B49b736d8afaBc3) |
+| AdvancePool | [`0xBD4D2915D4C985b9cfcd3B8f9453CB47a661bE21`](https://testnet.monadexplorer.com/address/0xBD4D2915D4C985b9cfcd3B8f9453CB47a661bE21) |
+| MockYieldVault (6.8 % APR) | [`0x5Df1DdbCA64d1D86545181E8A217c0884F298720`](https://testnet.monadexplorer.com/address/0x5Df1DdbCA64d1D86545181E8A217c0884F298720) |
+| AUSD (Agora, settlement asset) | [`0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC`](https://testnet.monadexplorer.com/address/0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC) |
 
 ERC-8004 registries used: Identity `0x8004A818BFB912233c491871b3d84c89A494BD9e`, Reputation `0x8004B663056A597Dffe9eCcC1965A193B7388713` (the demo provider is agent **#1891**). Chainlink CRE ingress: MockKeystoneForwarder `0xB9F79d863261869B234c481D1f9A7af84AeAd192` for `cre workflow simulate --broadcast`. Committee: `0xa4Ed2Fc4882C72fBdfA716AA76808E10F23D6004`, `0x254334Ca01a8ebD58D1a34d6cb939142978D9B7F` (threshold 1).
 
-Every address with its deployment block is in [docs/deployments](docs/deployments). Third-party addresses (registries, forwarders, USDC/AUSD, Morpho vaults) are verified in [docs/verify.md](docs/verify.md). Mainnet deployment (real USDC/AUSD + Morpho vault) uses the same script with `PAYMENT_TOKEN`/`YIELD_VAULT` set.
+The settlement asset is **Agora's AUSD**. Testnet AUSD comes from Agora's faucet: `requestFunds(address)` on `0xd236c18D274E54FAccC3dd9DDA4b27965a73ee6C` pays 10,000 AUSD per call. Every address with its deployment block is in [docs/deployments](docs/deployments); the first testnet deployment (18 Sep, mintable test dollar, block 63929211) stays live and is recorded in [docs/deployments/monad-testnet-tusd.json](docs/deployments/monad-testnet-tusd.json). Third-party addresses (registries, forwarders, USDC/AUSD, Morpho vaults) are verified in [docs/verify.md](docs/verify.md). Mainnet uses the same script with `YIELD_VAULT` set to a Morpho AUSD vault.
 
 ### Drill results on testnet
 
@@ -115,12 +115,15 @@ Every address with its deployment block is in [docs/deployments](docs/deployment
 | [Chainlink CRE attestation](docs/drill/cre-attestation.md) | PASS | Job #20 settled by a **CRE workflow report** delivered through the Monad KeystoneForwarder (mock) into `Evaluator.onReport` |
 | [D6 hostile LLM provider](docs/drill/d6-hostile-llm.md) | PASS | A Claude agent holding the provider key is told to get paid without delivering. Direct `complete`, self-attestation and a fabricated deliverable are refused on chain; the advance it took is bonded and ends as a recorded default that cuts its credit limit 55 % → 40 % |
 
+D1–D4 ran on the AUSD deployment above. D5, D6, the live agent run and the Chainlink CRE settlement ran on the first testnet deployment (test dollar; addresses in [docs/deployments/monad-testnet-tusd.json](docs/deployments/monad-testnet-tusd.json)) and their transaction links point there.
+
 ## Quickstart
 
 ```bash
 pnpm install
 cd packages/contracts && forge test            # 98 tests
 cp .env.example .env                           # fill keys; see docs/verify.md §11 for what needs an account
+# testnet AUSD for a wallet (10,000 per call): cast send 0xd236c18D274E54FAccC3dd9DDA4b27965a73ee6C 'requestFunds(address)' <wallet> --private-key <key> --rpc-url https://testnet-rpc.monad.xyz
 
 # deploy to Monad testnet (writes docs/deployments/monad-testnet.json)
 cd packages/contracts && forge script script/Deploy.s.sol:Deploy --rpc-url monad_testnet --broadcast
@@ -146,7 +149,7 @@ Per-block interest at 400 ms, a yield counter that moves every read, and a refus
 
 ## Sponsor stack
 
-Chainlink CRE (evaluator), Envio HyperIndex (console data), ERC-8004 registries on Monad (reputation + credit history), x402 via the Monad facilitator and MPP (synchronous provider payments), Morpho vaults (mainnet yield), Kuru (price data), Privy (human onboarding), Nansen (advisory counterparty labels, off chain only).
+Agora AUSD (settlement asset), Chainlink CRE (evaluator), Envio HyperIndex (console data, hosted on Envio Cloud), ERC-8004 registries on Monad (reputation + credit history), x402 via the Monad facilitator and MPP (synchronous provider payments), Morpho vaults (mainnet yield), Kuru (price data), Privy (human onboarding), Nansen (advisory counterparty labels, off chain only).
 
 ## Repository layout
 

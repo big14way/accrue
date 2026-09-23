@@ -275,7 +275,7 @@ export function Stack() {
   const contracts: [string, string][] = [
     ["AccrueEscrow", deployment.escrow], ["SLAHook", deployment.slaHook], ["ReputationHook", deployment.reputationHook], ["HookRouter", deployment.router],
     ["ComplianceHook", deployment.complianceHook], ["CredentialRegistry", deployment.credentialRegistry], ["Evaluator (CRE + committee)", deployment.evaluator], ["CreditScorer", deployment.creditScorer],
-    ["AdvancePool", deployment.advancePool], ["Yield vault (ERC-4626)", deployment.vault], ["Test dollar", deployment.token], ["CRE forwarder", deployment.creForwarder],
+    ["AdvancePool", deployment.advancePool], ["Yield vault (ERC-4626)", deployment.vault], ["AUSD (Agora)", deployment.token], ["CRE forwarder", deployment.creForwarder],
   ];
   return (
     <section className="section">

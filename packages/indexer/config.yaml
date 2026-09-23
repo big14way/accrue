@@ -9,10 +9,10 @@ field_selection:
     - from
 chains:
   - id: 10143
-    start_block: 63929210
+    start_block: 64964438
     contracts:
       - name: AccrueEscrow
-        address: "0xF39D05c6DBf186c2c1DC17392C642394F54DC171"
+        address: "0x44F29EEF182180B8ae93dc6765f20eC9B3Ee7366"
         handler: src/EventHandlers.ts
         events:
           - event: JobCreated(uint256 indexed jobId, address indexed client, address indexed provider, address evaluator, uint48 expiredAt, address hook)
@@ -32,13 +32,13 @@ chains:
           - event: PayoutReceiverLocked(uint256 indexed jobId, address indexed locker)
           - event: VaultShortfall(uint256 indexed jobId, uint256 expected, uint256 received)
       - name: SLAHook
-        address: "0xE4D6aB90dDc13798ccC59f01c4e61016523820fd"
+        address: "0x6c38A0C389048CE3448CA52eb40ce3b1870eDc0c"
         handler: src/EventHandlers.ts
         events:
           - event: TermsCommitted(uint256 indexed jobId, uint48 deadline, uint64 minFreshnessBlock, bytes32 deliverableCommitment, string deliverableURI)
           - event: SubmissionAccepted(uint256 indexed jobId, bytes32 deliverable, uint64 freshnessBlock, uint48 submittedAt)
       - name: Evaluator
-        address: "0x2d3a77a7A026d7ce1547fd8eE706309eAC404943"
+        address: "0x84d977302De3241b45BbA77A6C27321e5DcA3a2A"
         handler: src/EventHandlers.ts
         events:
           - event: Attested(uint256 indexed jobId, bytes32 indexed deliverable, bool ok, bytes32 reason, uint8 source)
@@ -46,7 +46,7 @@ chains:
           - event: DeadlineEnforced(uint256 indexed jobId, uint48 deadline)
           - event: ReportReceived(bytes32 workflowId, address workflowOwner, uint256 indexed jobId)
       - name: AdvancePool
-        address: "0x3877Adf5F35f68cEFB1804785e1C050959383407"
+        address: "0xBD4D2915D4C985b9cfcd3B8f9453CB47a661bE21"
         handler: src/EventHandlers.ts
         events:
           - event: Advanced(uint256 indexed jobId, address indexed provider, uint256 amount, uint256 bond, uint256 rateWadPerBlock, uint256 maxAdvanceBps)
@@ -57,7 +57,7 @@ chains:
           - event: Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)
           - event: Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)
       - name: ReputationHook
-        address: "0xCf3088f95D67926F4399C00251533614Dc132948"
+        address: "0x9Ed3DaEB695dF05d11b3C9EA6Feebb0fDb550e52"
         handler: src/EventHandlers.ts
         events:
           - event: FeedbackWritten(uint256 indexed jobId, uint256 indexed agentId, int128 value, string tag2)
