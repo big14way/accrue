@@ -8,9 +8,11 @@ Everything here is reproducible from the repo and the live deployment; no screen
    plus `<clip>.clicks.json` with click timestamps. `term.html` + `schedules.js` replay the drill reports
    in `docs/drill` as terminal scenes with their real step timings.
 3. `python3 make_config.py` writes `demo.json` (scenes, captions, narration from `../narration.md`).
-4. `python3 build_demo_say.py demo.json` renders `accrue-pitch.mp4`: macOS `say` narration (Samantha),
+4. `python3 build_demo_say.py demo.json` renders `accrue-pitch.mp4`: Microsoft Edge neural narration
+   (`en-US-AndrewMultilingualNeural` via `edge-tts`; macOS `say` is the offline fallback), photo panels and a
+   drawn money-flow diagram on the story slides (photos from `apps/console/public/img`, credits there),
    dark brand cards, wide device layout, 0.5 s crossfades, loudness-normalised audio, click sounds
-   mixed at the recorded click times. Needs ffmpeg and Pillow.
+   mixed at the recorded click times. Needs ffmpeg, Pillow and edge-tts.
 
 Stills of the Monad explorer and the Envio Cloud dashboard were captured from a logged-in Chrome and
 turned into 9 s slow-zoom clips (`ffmpeg -loop 1 … zoompan`).

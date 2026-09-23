@@ -75,6 +75,61 @@ def render_bg(path):
         spaced(d, (W - 120 - spaced_w(d, t, f, 2), H - 52), t, f, INK_FAINT, tracking=2)
     im.save(path)
 
+
+def cover(img, w, h):
+    iw, ih = img.size; r = max(w / iw, h / ih)
+    im = img.resize((int(iw * r) + 1, int(ih * r) + 1), Image.LANCZOS)
+    x, y = (im.width - w) // 2, (im.height - h) // 2
+    return im.crop((x, y, x + w, y + h))
+
+def photo_bg(path, w, h, dark=0.32):
+    im = cover(Image.open(P(path)).convert('RGB'), w, h)
+    im = Image.blend(im, Image.new('RGB', (w, h), PAPER), 1 - dark)  # darken towards the paper colour
+    return im
+
+def paste_panel(base, path, box, radius=28):
+    x0, y0, x1, y1 = box; w, h = x1 - x0, y1 - y0
+    im = cover(Image.open(P(path)).convert('RGB'), w, h).convert('RGBA')
+    # soft vignette so text never fights the photo
+    grad = Image.new('L', (w, h), 0); gd = ImageDraw.Draw(grad)
+    for i in range(h): gd.line((0, i, w, i), fill=int(70 * i / h))
+    im.alpha_composite(Image.merge('RGBA', (Image.new('L', (w, h), 0), Image.new('L', (w, h), 0), Image.new('L', (w, h), 0), grad)))
+    m = Image.new('L', (w, h), 0); ImageDraw.Draw(m).rounded_rectangle((0, 0, w - 1, h - 1), radius=radius, fill=255)
+    base.paste(im.convert('RGB'), (x0, y0), m)
+    ImageDraw.Draw(base).rounded_rectangle(box, radius=radius, outline=PAPER_DEEP, width=2)
+
+def arrow(d, a, b, color, width=4, head=14):
+    d.line((a, b), fill=color, width=width)
+    dx, dy = b[0] - a[0], b[1] - a[1]; L = math.hypot(dx, dy) or 1; ux, uy = dx / L, dy / L
+    px, py = -uy, ux
+    d.polygon([b, (b[0] - ux * head + px * head * 0.55, b[1] - uy * head + py * head * 0.55), (b[0] - ux * head - px * head * 0.55, b[1] - uy * head - py * head * 0.55)], fill=color)
+
+def draw_flow(base, box):
+    """How the money moves: client → escrow (earning) → provider, pool advance, evaluator verdict."""
+    x0, y0, x1, y1 = box; d = ImageDraw.Draw(base)
+    d.rounded_rectangle(box, radius=28, fill=PAPER_DEEP)
+    ft, fs, fl = font(F_BOLD, 26), font(F_SEMI, 20), font(F_DISPLAY, 18)
+    def bx(rect, title, sub=None, accent=False):
+        r = (x0 + rect[0], y0 + rect[1], x0 + rect[2], y0 + rect[3])
+        d.rounded_rectangle(r, radius=16, fill=PAPER, outline=ACCENT if accent else INK_FAINT, width=2)
+        d.text((r[0] + 18, r[1] + 14), title, font=ft, fill=INK)
+        if sub: d.text((r[0] + 18, r[1] + 50), sub, font=fs, fill=INK_SOFT)
+        return r
+    c = bx((36, 36, 300, 126), 'Client agent', 'funds the job')
+    e = bx((36, 250, 404, 360), 'Accrue escrow', 'budget earns in an ERC-4626 vault', accent=True)
+    pr = bx((462, 250, 674, 360), 'Provider agent', 'paid on proof')
+    po = bx((36, 500, 300, 600), 'Advance pool', 'priced from ERC-8004')
+    ev = bx((346, 500, 674, 600), 'Evaluator', 'Chainlink CRE · committee')
+    def lab(pt, text, anchor='la'):
+        d.text(pt, text, font=fl, fill=ACCENT, anchor=anchor)
+    arrow(d, (c[0] + 130, c[3]), (c[0] + 130, e[1]), ACCENT); lab((c[0] + 146, (c[3] + e[1]) // 2), 'funds → yield from block 1', 'lm')
+    arrow(d, (e[2], (e[1] + e[3]) // 2), (pr[0], (pr[1] + pr[3]) // 2), ACCENT); lab(((e[2] + pr[0]) // 2, e[1] - 16), 'pays on proof', 'mm')
+    arrow(d, (po[0] + 130, po[1]), (po[0] + 130, e[3]), ACCENT_SOFT); lab((po[0] + 146, e[3] + 32), 'repaid first at completion', 'lm')
+    mx, my = (po[2] + pr[0] + 60) // 2, (po[1] + 20 + pr[3]) // 2
+    arrow(d, (po[2], po[1] + 20), (pr[0] + 60, pr[3]), ACCENT_SOFT); lab((mx - 14, my + 14), 'advance now', 'rm')
+    arrow(d, (ev[0] + 120, ev[1]), (e[2] - 60, e[3]), ACCENT); lab((ev[0] + 132, ev[1] - 30), 'verdict, bound to the hash', 'lm')
+    d.rounded_rectangle(box, radius=28, outline=INK_FAINT, width=2)
+
 def render_caption_wide(path, step, head, sub):
     im = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
     x, y = 120, 118
@@ -103,19 +158,31 @@ def render_slide(sc):
     wordmark(base, 120, 64)
     if DOMAIN:
         f = font(F_DISPLAY, 24); t = DOMAIN.upper(); spaced(d, (W - 120 - spaced_w(d, t, f, 2), H - 52), t, f, INK_FAINT, tracking=2)
-    y = 220
+    visual = sc.get('image') or sc.get('diagram')
+    panel = (1090, 170, 1800, 920)
+    if sc.get('image'): paste_panel(base, sc['image'], panel)
+    elif sc.get('diagram') == 'flow': draw_flow(base, panel)
+    textw = 900 if visual else 1500
+    y = 200 if visual else 220
     if sc.get('label'): spaced(d, (120, y), sc['label'].upper(), font(F_DISPLAY, 30), ACCENT, tracking=4); y += 56
-    fh = font(F_BOLD, 84)
-    for line in wrap(d, sc['head'], fh, 1500): d.text((120, y), line, font=fh, fill=INK); y += 98
-    y += 44
+    fh = font(F_BOLD, 66 if visual else 84)
+    for line in wrap(d, sc['head'], fh, textw): d.text((120, y), line, font=fh, fill=INK); y += (78 if visual else 98)
+    y += 36 if visual else 44
     bp = os.path.join(OUT, sc['id'] + '_base.png'); base.save(bp)
     layers = []
-    cols = sc.get('columns', 1); colw = (W - 240 - (cols - 1) * 60) / cols
-    fb = font(F_SEMI, 40 if cols == 1 else 36); fk = font(F_DISPLAY, 26)
+    cols = sc.get('columns', 1); colw = (textw - (cols - 1) * (40 if visual else 60)) / cols
+    fb = font(F_SEMI, (30 if cols > 1 else 34) if visual else (40 if cols == 1 else 36)); fk = font(F_DISPLAY, 24 if visual else 26)
+    rh = sc.get('row_h', 120)
+    if visual:  # row height follows the tallest wrapped bullet
+        lh = 42; tallest = 0
+        for b in sc['bullets']:
+            k, v = (b.get('k', ''), b['v']) if isinstance(b, dict) else ('', b)
+            tallest = max(tallest, (38 if k else 0) + lh * len(wrap(d, v, fb, colw - 40)))
+        rh = tallest + 22
     for i, b in enumerate(sc['bullets']):
         im = Image.new('RGBA', (W, H), (0, 0, 0, 0)); dd = ImageDraw.Draw(im)
         c, r = i % cols, i // cols
-        x = 120 + c * (colw + 60); yy = y + r * (sc.get('row_h', 120))
+        x = 120 + c * (colw + (40 if visual else 60)); yy = y + r * rh
         if isinstance(b, dict):
             k, v = b.get('k', ''), b['v']
         else: k, v = '', b
@@ -124,12 +191,12 @@ def render_slide(sc):
         tx = x + 40
         if k: spaced(dd, (tx, yy), k.upper(), fk, ACCENT, tracking=3); yy2 = yy + 38
         else: yy2 = yy
-        for line in wrap(dd, v, fb, colw - 40): dd.text((tx, yy2), line, font=fb, fill=INK if k else INK_SOFT); yy2 += 48
+        for line in wrap(dd, v, fb, colw - 40): dd.text((tx, yy2), line, font=fb, fill=INK if k else INK_SOFT); yy2 += (42 if visual else 48)
         lp = os.path.join(OUT, f"{sc['id']}_b{i}.png"); im.save(lp); layers.append(lp)
     return bp, layers
 
 def render_title(sc, path):
-    im = Image.new('RGB', (W, H), CARD); d = ImageDraw.Draw(im)
+    im = photo_bg(sc['image'], W, H, dark=0.42) if sc.get('image') else Image.new('RGB', (W, H), CARD); d = ImageDraw.Draw(im)
     f = font(F_DISPLAY, 190); t = NAME.upper(); tw = spaced_w(d, t, f, 6)
     s = 150 if LOGO else 0; total = s + (40 if LOGO else 0) + tw; x0 = (W - total) / 2; y0 = H / 2 - 150
     if LOGO:
@@ -143,7 +210,7 @@ def render_title(sc, path):
     im.save(path)
 
 def render_end(sc, path):
-    im = Image.new('RGB', (W, H), CARD); d = ImageDraw.Draw(im)
+    im = photo_bg(sc['image'], W, H, dark=0.3) if sc.get('image') else Image.new('RGB', (W, H), CARD); d = ImageDraw.Draw(im)
     wordmark(im, 120, 64, on_accent=True)
     fh = font(F_BOLD, 84); y = 300
     for l in sc['lines']: d.text((120, y), l, font=fh, fill=WHITE); y += 100
@@ -160,9 +227,14 @@ def shadow(path, w, h, r, pad=90):
     ImageDraw.Draw(im).rounded_rectangle((pad, pad + 28, pad + w, pad + h + 28), radius=r, fill=(20, 22, 42, 110))
     im.filter(ImageFilter.GaussianBlur(34)).save(path)
 
-TEMPO = CFG.get('voice_tempo', 0.9)
+TEMPO = CFG.get('voice_tempo', 1.0)
 def tts(text, sid):
     h = hashlib.md5((VOICE + str(RATE) + str(TEMPO) + text).encode()).hexdigest()[:10]
+    if 'Neural' in VOICE:
+        path = os.path.join(OUT, f'{sid}_{h}.mp3')
+        if args.fresh or not os.path.exists(path):
+            run(['edge-tts', '--voice', VOICE, f'--rate={RATE}', '--text', text, '--write-media', path])
+        return path, dur_of(path)
     path = os.path.join(OUT, f'{sid}_{h}.wav')
     if args.fresh or not os.path.exists(path):
         aiff = path[:-4] + '.aiff'

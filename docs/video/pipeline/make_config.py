@@ -4,6 +4,7 @@ import json, os, subprocess
 HERE = os.path.dirname(os.path.abspath(__file__))
 CLIPS = os.path.join(HERE, 'rec', 'clips')
 FONTS = '/Users/gwill/.claude/skills/demo-video/assets/fonts'
+IMG = '/Users/gwill/Developer/acrrue/apps/console/public/img'
 
 def dur(name):
     p = os.path.join(CLIPS, name)
@@ -17,7 +18,7 @@ def lap(id, src, step, head, sub, vo, cut=None, max_speed=1.0, hold=None):
 
 cfg = {
   "clips_dir": "rec/clips", "work_dir": ".demo-build", "output": "accrue-pitch.mp4",
-  "voice": "Samantha", "voice_rate": 150, "voice_tempo": 0.95, "crossfade": 0.5,
+  "voice": "en-US-AndrewMultilingualNeural", "voice_rate": "-4%", "voice_tempo": 1.0, "crossfade": 0.5,
   "sfx_click": "rec/click.wav", "sfx_gain": 0.6,
   "brand": {
     "name": "Accrue", "domain": "accrue-virid.vercel.app",
@@ -26,14 +27,14 @@ cfg = {
     "fonts": {"display": f"{FONTS}/barlowsc-700.ttf", "bold": f"{FONTS}/barlow-700.ttf", "semi": f"{FONTS}/barlow-600.ttf"}
   },
   "scenes": [
-    {"id": "s0", "kind": "title", "tagline": "Escrow that earns while it waits. Pays only on verified delivery. Lets the provider borrow against it.", "tag": "Monad Metropolis · Track 1 · Onchain Finance",
+    {"id": "s0", "kind": "title", "image": f"{IMG}/hero.jpg", "tagline": "Escrow that earns while it waits. Pays only on verified delivery. Lets the provider borrow against it.", "tag": "Monad Metropolis · Track 1 · Onchain Finance",
      "vo": "This is Accrue. Escrow that earns while it waits, pays only on verified delivery, and lets the provider borrow against it. Built on Monad."},
-    {"id": "p1", "kind": "slide", "label": "The problem", "head": "Agents are hiring agents. The money is stuck in the past.", "columns": 1, "row_h": 130,
+    {"id": "p1", "kind": "slide", "image": f"{IMG}/vault.jpg", "label": "The problem", "head": "Agents are hiring agents. The money is stuck in the past.", "columns": 1, "row_h": 130,
      "bullets": [{"k": "Idle capital", "v": "The budget sits locked in escrow for the whole job, earning nothing."},
                  {"k": "Slow cash", "v": "The provider waits weeks to be paid, because a human has to click approve."},
                  {"k": "One server decides", "v": "Whoever deployed the marketplace decides who gets the money."}],
      "vo": "Picture an agent that just finished a week of work for another agent. The budget sat locked in escrow the whole time, earning nothing. Now it waits weeks to be paid, because somewhere a human has to click approve. And if there is a dispute, one server, run by whoever deployed the marketplace, decides who gets the money. Idle capital. Slow cash. A single point of trust. That is agent commerce today, and it cannot scale."},
-    {"id": "p2", "kind": "slide", "label": "What Accrue changes", "head": "Three changes. Every one enforced by an immutable contract.", "columns": 1, "row_h": 130,
+    {"id": "p2", "kind": "slide", "diagram": "flow", "label": "What Accrue changes", "head": "Three changes. Every one enforced by an immutable contract.", "columns": 1, "row_h": 130,
      "bullets": [{"k": "Yield-bearing escrow", "v": "The budget goes into an ERC-4626 vault the moment the job is funded."},
                  {"k": "Receivables advance", "v": "The provider borrows against the job now, priced from its ERC-8004 history."},
                  {"k": "Evaluator is a contract", "v": "The verdict comes from Chainlink CRE or a committee, bound to the submitted hash."}],
@@ -60,24 +61,24 @@ cfg = {
         "We handed a Claude agent the provider key and told it to get paid without doing the work. It tried a direct completion, a fabricated deliverable and a self-attestation. Every path was refused on chain. The advance it took became a recorded default, and its credit limit fell from fifty-five to forty percent.", cut=[0.2, round(dur("term_d6.webm") - 0.3, 2)], max_speed=2.0),
     lap("s9", "term_cre.webm", "09", "The evaluator is a Chainlink CRE workflow", "Re-fetch inside the DON, consensus on the body, verdict through the Keystone forwarder. Job #20 settled this way.",
         "The evaluator is a contract. A Chainlink CRE workflow re-fetches the deliverable inside the DON, reaches consensus on the body, and delivers the verdict through the Keystone forwarder. Job twenty was settled exactly that way. A threshold committee is the fallback, and a verdict for any other hash is refused.", cut=[0.2, round(dur("term_cre.webm") - 0.3, 2)], max_speed=1.3),
-    {"id": "p3", "kind": "slide", "label": "Why Monad", "head": "Per-block interest at 400 ms. A refusal you can link to costs cents.", "columns": 2, "row_h": 150,
+    {"id": "p3", "kind": "slide", "image": f"{IMG}/speed.jpg", "label": "Why Monad", "head": "Per-block interest at 400 ms. A refusal you can link to costs cents.", "columns": 2, "row_h": 150,
      "bullets": [{"k": "Drill 5", "v": "20 jobs funded and settled back to back"}, {"k": "141 transactions", "v": "across 1,349 blocks, 262 s of chain time"},
                  {"k": "39.4 M gas", "v": "about 0.2 MON per full job lifecycle"}, {"k": "ERC-8004 on Monad", "v": "credit history native to the chain"}],
      "vo": "Why Monad. Per-block interest at four hundred milliseconds, a yield counter that moves on every read, and a refusal you can link to, all for cents. In drill five we funded and settled twenty jobs back to back: one hundred and forty-one transactions across one thousand three hundred and forty-nine blocks, thirty-nine million gas, about a fifth of a MON per job lifecycle. And because ERC-8004 lives on Monad, credit history is native to the chain."},
-    {"id": "p4", "kind": "slide", "label": "Built on", "head": "Load-bearing integrations, not badges.", "columns": 2, "row_h": 110,
+    {"id": "p4", "kind": "slide", "image": f"{IMG}/nodes.jpg", "label": "Built on", "head": "Load-bearing integrations, not badges.", "columns": 2, "row_h": 110,
      "bullets": [{"k": "Agora AUSD", "v": "settlement asset"}, {"k": "Chainlink CRE", "v": "the evaluator"},
                  {"k": "Envio HyperIndex", "v": "every history view, hosted on Envio Cloud"}, {"k": "ERC-8004", "v": "identity and reputation"},
                  {"k": "x402 + MPP", "v": "per-call provider payments"}, {"k": "Privy · Nansen · Morpho", "v": "human onboarding, counterparty labels, mainnet yield"}],
      "vo": "Load-bearing integrations, not badges. Agora's AUSD is the settlement asset. Chainlink CRE is the evaluator. Envio HyperIndex, hosted on Envio Cloud, feeds every history view in the console. ERC-8004 provides identity and reputation. Providers are paid per call over x402 and Monad's MPP. Privy onboards humans. Nansen labels counterparties. And on mainnet, Morpho vaults are the yield source."},
-    {"id": "p5", "kind": "slide", "label": "Revenue model", "head": "Revenue scales with escrowed volume, not headcount.", "columns": 1, "row_h": 130,
+    {"id": "p5", "kind": "slide", "image": f"{IMG}/flow.jpg", "label": "Revenue model", "head": "Revenue scales with escrowed volume, not headcount.", "columns": 1, "row_h": 130,
      "bullets": [{"k": "Yield share", "v": "A protocol share of realised yield on every settled job, set in the job's yield policy. The demo runs at 10 %."},
                  {"k": "Advance interest", "v": "Accrues to the lending pool today."},
                  {"k": "Next on mainnet", "v": "A spread on advance interest and an origination fee on advances."}],
      "vo": "The business model is simple. The protocol takes a share of the realised yield on every settled job, written into the job's own yield policy. The demo runs at ten percent. Advances earn interest for the lending pool today, and on mainnet a spread on that interest and an origination fee on advances are the next levers. Revenue scales with escrowed volume, not with headcount."},
-    {"id": "p6", "kind": "slide", "label": "Track 1 · Onchain Finance & Trading", "head": "Undercollateralised credit priced on onchain history. Yield on idle capital. Settlement only Monad's speed makes viable.", "columns": 1, "row_h": 120,
+    {"id": "p6", "kind": "slide", "image": f"{IMG}/ribbons.jpg", "label": "Track 1 · Onchain Finance & Trading", "head": "Undercollateralised credit priced on onchain history. Yield on idle capital. Settlement only Monad's speed makes viable.", "columns": 1, "row_h": 120,
      "bullets": [{"k": "For the ecosystem", "v": "Every agent marketplace on Monad that plugs in becomes a source of yield, credit and reputation."}],
      "vo": "Track one asks for onchain finance: undercollateralised lending priced on onchain credit history, yield on idle capital, and settlement that only Monad's speed makes viable. Accrue is all three. And every agent marketplace on Monad that plugs in becomes a source of yield, credit and reputation for the whole ecosystem."},
-    {"id": "s99", "kind": "end", "lines": ["Post a job.", "Watch it earn.", "Get paid on proof."],
+    {"id": "s99", "kind": "end", "image": f"{IMG}/hero.jpg", "lines": ["Post a job.", "Watch it earn.", "Get paid on proof."],
      "links": [["Console", "accrue-virid.vercel.app"], ["Code", "github.com/big14way/accrue"], ["Drills", "every step links to its transaction"]],
      "footer": "Monad testnet · Agora AUSD · Chainlink CRE · Envio · ERC-8004",
      "vo": "Accrue. Post a job. Watch it earn. Get paid on proof. The console, the code and every drill transaction are in the links."}
