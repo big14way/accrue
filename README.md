@@ -110,7 +110,7 @@ Every address with its deployment block is in [docs/deployments](docs/deployment
 | [D2 on-time](docs/drill/d2-ontime.md) | PASS | One tx pays provider (principal + 40 % of yield), client (50 %), protocol (10 %) |
 | [D3 advance + reject](docs/drill/d3-advance-reject.md) | PASS | Advance paid now; rejection → bond seized, shortfall recorded, ERC-8004 default; limit 10 % → 0 % |
 | [D4 evaluator attack](docs/drill/d4-evaluator-attack.md) | PASS | Wrong hash, non-member and non-forwarder attestations all refused |
-| [D5 throughput](docs/drill/d5-throughput.md) | PASS | Jobs funded and settled back to back; wall clock, blocks and gas recorded |
+| [D5 throughput](docs/drill/d5-throughput.md) | PASS | 20 jobs funded and settled back to back: 141 txs over 1349 blocks (262 s of chain time), 39.4 M gas, about 0.2 MON per job lifecycle; the serial client is the bottleneck, not the chain |
 | [Live agents](docs/drill/live-agents.md) | PASS | Client posts; the provider **agent** quotes and delivers; the evaluator **daemon** re-fetches, verifies and settles. No human in the loop |
 | [Chainlink CRE attestation](docs/drill/cre-attestation.md) | PASS | Job #20 settled by a **CRE workflow report** delivered through the Monad KeystoneForwarder (mock) into `Evaluator.onReport` |
 | [D6 hostile LLM provider](docs/drill/d6-hostile-llm.md) | PASS | A Claude agent holding the provider key is told to get paid without delivering. Direct `complete`, self-attestation and a fabricated deliverable are refused on chain; the advance it took is bonded and ends as a recorded default that cuts its credit limit 55 % → 40 % |
@@ -142,7 +142,7 @@ pnpm --filter @accrue/drill live              # with server + agent + daemon run
 
 ## Why Monad
 
-Per-block interest at 400 ms, a yield counter that moves every read, and a refusal you can link to, all cost cents. The D5 drill funds and settles a batch of jobs back to back and reports wall-clock, blocks spanned and gas; see [docs/drill/d5-throughput.md](docs/drill/d5-throughput.md).
+Per-block interest at 400 ms, a yield counter that moves every read, and a refusal you can link to, all cost cents. The D5 drill funds and settles 20 jobs back to back from one client: 141 transactions over 1349 blocks, 262 s of chain time, 39.4 M gas in total (about 0.2 MON per job lifecycle at 102 gwei, with every settlement paying pool, provider, client and protocol and writing ERC-8004 feedback in one transaction). Transactions are sent one after another, so the figure is the RPC round trip, not the chain's limit; see [docs/drill/d5-throughput.md](docs/drill/d5-throughput.md).
 
 ## Sponsor stack
 
