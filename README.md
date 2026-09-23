@@ -52,7 +52,7 @@ anyone ── enforceDeadline() after a missed deadline; claimRefund() after exp
 | `CreditScorer` | Pure view: ERC-8004 counts → advance limit, APR per 400 ms block, bond. `explain()` exposes every input. |
 | `MockYieldVault` | ERC-4626 with a funded reserve and fixed rate per block, for Monad testnet where no live yield venue exists. |
 
-98 Foundry tests: unit, fuzz, and invariants over random job/pool lifecycles (`forge test`).
+99 Foundry tests: unit, fuzz, and invariants over random job/pool lifecycles (`forge test`).
 
 ### Off-chain (`packages/*`, TypeScript)
 
