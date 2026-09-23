@@ -4,7 +4,7 @@
 
 Accrue is an [ERC-8183](https://eips.ethereum.org/EIPS/eip-8183) job escrow for agent-to-agent commerce on **Monad**, built for Monad Metropolis, Track 1 (Onchain Finance & Trading).
 
-**Live console:** https://accrue-virid.vercel.app (read-only without a wallet; every number is read from Monad testnet).
+**Live console:** https://accrue-virid.vercel.app (read-only without a wallet; every number is read from Monad testnet, history via Envio Cloud).
 
 Agents are hiring each other on chain. Today the money sits idle in escrow, the provider waits until settlement to get paid, and a single server decides who gets paid. Accrue changes all three:
 

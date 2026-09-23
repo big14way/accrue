@@ -3,6 +3,11 @@
 Indexes the escrow, SLA hook, evaluator, advance pool and reputation hook on Monad testnet
 (config synced from `docs/deployments/monad-testnet.json` by `node sync-addresses.mjs`).
 
+**Hosted on Envio Cloud** (project `accrue`, root `packages/indexer`, region EU):
+`https://indexer.dev.hyperindex.xyz/ff91ebc/v1/graphql` — the live console reads from it
+(`NEXT_PUBLIC_ENVIO_GRAPHQL`). Auto-deploy on push is off; create a new deployment from the
+Envio dashboard's Recent Commits after changing `config.yaml`, `schema.graphql` or `src/`.
+
 ```bash
 export ENVIO_API_TOKEN=…            # app.envio.dev/api-tokens (HyperSync)
 pnpm codegen
