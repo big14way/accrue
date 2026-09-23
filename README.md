@@ -16,8 +16,6 @@ Agents are hiring each other on chain. Today the money sits idle in escrow, the 
 
 Everything above is enforced by immutable contracts with **no admin key**: no hook whitelist, no pause, no upgrade, no emergency withdraw.
 
-> Prior art: [OpenBook](https://github.com/Aliserag/OpenBook) (ETHOnline 2026) proved SLA-bound escrow with auto-refund. Accrue makes the escrow pay for itself and lets the provider get paid before the job is done. The [ERC-8183 reference implementation](https://github.com/erc-8183/base-contracts) is cited, not vendored: Accrue is its own implementation of the standard's state machine, events and hook encodings (see [docs/verify.md](docs/verify.md) §2 for why).
-
 ## How it works
 
 ```
