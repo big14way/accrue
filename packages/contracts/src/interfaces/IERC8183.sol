@@ -3,9 +3,8 @@ pragma solidity ^0.8.28;
 
 /// @title IERC8183
 /// @notice The ERC-8183 "Agentic Commerce" job-escrow surface implemented by AccrueEscrow.
-/// @dev Function names, parameter order, events and hook data encodings follow the reference
-///      implementation (erc-8183/base-contracts) so that ERC-8183 clients, hooks and indexers
-///      written against the reference keep working. Accrue adds yield custody and a payout-lock;
+/// @dev Function names, parameter order, events and hook data encodings follow the ERC-8183
+///      standard so that existing ERC-8183 clients, hooks and indexers keep working. Accrue adds yield custody and a payout-lock;
 ///      those extensions live in IAccrueEscrow.
 interface IERC8183 {
     /// @notice Job lifecycle states. Completed, Rejected and Expired are terminal.

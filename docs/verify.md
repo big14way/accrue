@@ -28,10 +28,9 @@ limit is 128 KB; storage is paged in 128-slot pages; EIP-4844 blobs are unsuppor
 **Findings.**
 - Mainnet `0xE8c4FFb4A6F7B8040a7AE39F6651290E06A40725` has code (`jobCounter() = 1`) but **does not
   expose the reference ABI** (`platformFeeBP`, `allowedPaymentTokens`, `platformTreasury` all revert);
-  it is not an ERC-1967 proxy (implementation slot is zero). It is a different implementation
-  (qntx/market-contract). Building hooks against it would be guesswork.
+  it is not an ERC-1967 proxy (implementation slot is zero). It is a different implementation. Building hooks against it would be guesswork.
 - Nothing is deployed at that address on testnet (`cast code` → empty).
-- In the reference implementation (`erc-8183/base-contracts`, MIT), **the core custodies the budget
+- In the ERC-8183 reference implementation, **the core custodies the budget
   itself** (`safeTransferFrom(client, address(this), budget)` at `fund`) and only moves it at
   `complete` / `reject` / `claimRefund` / admin `emergencyWithdraw`. A hook cannot move the escrowed
   balance into a vault. Hooks are also **admin-whitelisted** (`setHookWhitelist`) and the core is
@@ -45,7 +44,7 @@ limit is 128 KB; storage is paged in 128-slot pages; EIP-4844 blobs are unsuppor
 names, same events, same hook encodings), with two differences that *are* the product: while a job
 is `Funded`/`Submitted` the budget sits in an ERC-4626 vault, and there is **no admin key** — no
 whitelist, no pause, no upgrade, no emergency withdraw. Yield custody is a core property, not a hook,
-because a hook cannot custody in the reference design. The reference contracts are cited, not vendored.
+because a hook cannot custody in the reference design.
 
 ## 3. ERC-8004 registries
 
