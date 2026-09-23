@@ -1,63 +1,63 @@
 {
   "drill": "d1-stale",
   "title": "D1 — Stale delivery refused on chain, deadline miss auto-refunded",
-  "ranAt": "2026-09-19T16:30:25.280Z",
+  "ranAt": "2026-09-23T08:42:17.982Z",
   "passed": true,
   "steps": [
     {
       "step": "client creates job with minFreshnessBlock = latest and a 90 s deadline",
       "ok": true,
-      "ms": 6824,
-      "tx": "0x788fbe815776a6d73efd3aece0d947a788c739257a95ed8c70a683018d111f12",
-      "explorer": "https://testnet.monadexplorer.com/tx/0x788fbe815776a6d73efd3aece0d947a788c739257a95ed8c70a683018d111f12",
-      "detail": "jobId 1"
+      "ms": 2401,
+      "tx": "0xc86bd49e8057c8e3377833a277ace369ec7b9ddf99cfa8a0994adea0e0fffb6d",
+      "explorer": "https://testnet.monadexplorer.com/tx/0xc86bd49e8057c8e3377833a277ace369ec7b9ddf99cfa8a0994adea0e0fffb6d",
+      "detail": "jobId 2"
     },
     {
       "step": "provider quotes budget",
       "ok": true,
-      "ms": 2317,
-      "tx": "0xf026bc308776bb5f9f4b16ef769f8086577369d7cb16eb149058a3440a656645",
-      "explorer": "https://testnet.monadexplorer.com/tx/0xf026bc308776bb5f9f4b16ef769f8086577369d7cb16eb149058a3440a656645",
+      "ms": 1188,
+      "tx": "0x713855a967635941f7485d7496600b06df2fb95ea343161f04828093145f51a0",
+      "explorer": "https://testnet.monadexplorer.com/tx/0x713855a967635941f7485d7496600b06df2fb95ea343161f04828093145f51a0",
       "gasUsed": "164616",
-      "block": "63930159"
+      "block": "64969961"
     },
     {
       "step": "client funds → budget goes into the yield vault",
       "ok": true,
-      "ms": 4848,
-      "tx": "0xb62c581dde5b88902dca7b166d725c689469ac4dc5045ba9867290322b1a2da3",
-      "explorer": "https://testnet.monadexplorer.com/tx/0xb62c581dde5b88902dca7b166d725c689469ac4dc5045ba9867290322b1a2da3",
-      "gasUsed": "395992",
-      "block": "63930179"
+      "ms": 2777,
+      "tx": "0xbda328753efae3237fb0766210e786ede18f7919359d2afece03a68a209f5066",
+      "explorer": "https://testnet.monadexplorer.com/tx/0xbda328753efae3237fb0766210e786ede18f7919359d2afece03a68a209f5066",
+      "gasUsed": "371769",
+      "block": "64969970"
     },
     {
-      "step": "provider submits data from block 63930112 (< committed 63930132)",
+      "step": "provider submits data from block 64969930 (< committed 64969950)",
       "ok": true,
-      "ms": 397,
-      "detail": "refused on chain: Stale data: the job requires data from block 63930132 or later, but the delivery is from block 63930112. [StaleData]"
+      "ms": 191,
+      "detail": "refused on chain: Stale data: the job requires data from block 64969950 or later, but the delivery is from block 64969930. [StaleData]"
     },
     {
       "step": "job is still Funded; nothing moved",
       "ok": true,
-      "detail": "status Funded, escrow shares 1000000000"
+      "detail": "status Funded, escrow shares 999999976"
     },
     {
       "step": "anyone enforces the deadline → reject → refund in one tx",
       "ok": true,
-      "ms": 1267,
-      "tx": "0x6d2b0e0abfc9b4a2b34f49e4c0f6e675174acb97137f7efea5620524a11d2442",
-      "explorer": "https://testnet.monadexplorer.com/tx/0x6d2b0e0abfc9b4a2b34f49e4c0f6e675174acb97137f7efea5620524a11d2442",
-      "gasUsed": "730320",
-      "block": "63930515",
-      "detail": "block 63930515"
+      "ms": 1301,
+      "tx": "0x3be39abd8edc151c139e11c36cb86f5b741b1b5fd2c968f0f938515e64bf8f8d",
+      "explorer": "https://testnet.monadexplorer.com/tx/0x3be39abd8edc151c139e11c36cb86f5b741b1b5fd2c968f0f938515e64bf8f8d",
+      "gasUsed": "741327",
+      "block": "64970293",
+      "detail": "block 64970293"
     },
     {
       "step": "client refunded principal + accrued yield",
       "ok": true,
-      "detail": "status Rejected; client balance 100000 → 100000.000288 tUSD; yield preview before settle 0.000281"
+      "detail": "status Rejected; client balance 9000 → 9000.000278 AUSD; yield preview before settle 0.000275"
     }
   ],
-  "jobId": "1",
-  "escrow": "0xF39D05c6DBf186c2c1DC17392C642394F54DC171",
-  "budget": "1000 tUSD"
+  "jobId": "2",
+  "escrow": "0x44F29EEF182180B8ae93dc6765f20eC9B3Ee7366",
+  "budget": "1000 AUSD"
 }
