@@ -1,48 +1,48 @@
 {
   "drill": "d4-evaluator-attack",
   "title": "D4 — Verdicts are bound to the submitted hash and to authorised sources",
-  "ranAt": "2026-09-19T16:33:25.476Z",
+  "ranAt": "2026-09-23T08:43:24.673Z",
   "passed": true,
   "steps": [
     {
       "step": "client creates job",
       "ok": true,
-      "ms": 5024,
-      "tx": "0x1ecb9e21e7ee4a6fdaf6a7dce8d862a02e26f3c8e39b5a1d15cf5c66656d9af7",
-      "explorer": "https://testnet.monadexplorer.com/tx/0x1ecb9e21e7ee4a6fdaf6a7dce8d862a02e26f3c8e39b5a1d15cf5c66656d9af7",
-      "detail": "jobId 4"
+      "ms": 2607,
+      "tx": "0xc169e6975c6ee51af4628f3d5d887af4b3687adc089ff2c75e410ffcdff91341",
+      "explorer": "https://testnet.monadexplorer.com/tx/0xc169e6975c6ee51af4628f3d5d887af4b3687adc089ff2c75e410ffcdff91341",
+      "detail": "jobId 5"
     },
     {
       "step": "provider quotes",
       "ok": true,
-      "ms": 3645,
-      "tx": "0x7314918254c71c18de7649135e9fc272dc138024146f86b4c90a682a0e4cd3c6",
-      "explorer": "https://testnet.monadexplorer.com/tx/0x7314918254c71c18de7649135e9fc272dc138024146f86b4c90a682a0e4cd3c6",
+      "ms": 581,
+      "tx": "0x67f20d2859ee379d1dc112582731b3b40f3bb3b6d11cba4720190766f182c14b",
+      "explorer": "https://testnet.monadexplorer.com/tx/0x67f20d2859ee379d1dc112582731b3b40f3bb3b6d11cba4720190766f182c14b",
       "gasUsed": "164616",
-      "block": "63931075"
+      "block": "64970497"
     },
     {
       "step": "client funds",
       "ok": true,
-      "ms": 4169,
-      "tx": "0x86329dd845055096c702d46a36dc50608316416cf75e7dc6f28fb28142605907",
-      "explorer": "https://testnet.monadexplorer.com/tx/0x86329dd845055096c702d46a36dc50608316416cf75e7dc6f28fb28142605907",
-      "gasUsed": "380256",
-      "block": "63931093"
+      "ms": 2707,
+      "tx": "0x2b4cfabe16e4865a3c98e6206f564b07cd6633728345919b45c1b1607ea76461",
+      "explorer": "https://testnet.monadexplorer.com/tx/0x2b4cfabe16e4865a3c98e6206f564b07cd6633728345919b45c1b1607ea76461",
+      "gasUsed": "371769",
+      "block": "64970505"
     },
     {
       "step": "provider submits REAL hash",
       "ok": true,
-      "ms": 2333,
-      "tx": "0x3b3626071277b06014c1a5f22e8dc171fd9d2904a41f85391788d3dc092e8a27",
-      "explorer": "https://testnet.monadexplorer.com/tx/0x3b3626071277b06014c1a5f22e8dc171fd9d2904a41f85391788d3dc092e8a27",
+      "ms": 1094,
+      "tx": "0x6f1ec7fcf883874bb37b793bd0a8e1b79e18797e41dc212dd6c7279e17012437",
+      "explorer": "https://testnet.monadexplorer.com/tx/0x6f1ec7fcf883874bb37b793bd0a8e1b79e18797e41dc212dd6c7279e17012437",
       "gasUsed": "212533",
-      "block": "63931101"
+      "block": "64970509"
     },
     {
       "step": "committee attests OK for a DIFFERENT hash",
       "ok": true,
-      "ms": 381,
+      "ms": 171,
       "detail": "refused on chain: The attested deliverable (0xbb2c68…346c) does not match what the provider submitted (0x43d303…ed59). [DeliverableMismatch]"
     },
     {
@@ -58,11 +58,11 @@
     {
       "step": "honest attestation for the real hash by 0x254334",
       "ok": true,
-      "ms": 1268,
-      "tx": "0xffdedf5aa92e1fd3f77a41c1dd6f2d58a5a785e4f733e33f07a29786bdf0d5a9",
-      "explorer": "https://testnet.monadexplorer.com/tx/0xffdedf5aa92e1fd3f77a41c1dd6f2d58a5a785e4f733e33f07a29786bdf0d5a9",
-      "gasUsed": "812252",
-      "block": "63931112"
+      "ms": 1232,
+      "tx": "0xb7592c0624c4c8d3ed74e78ef56b80c4ac74bf32e9cdde7864cb27144be8fa6b",
+      "explorer": "https://testnet.monadexplorer.com/tx/0xb7592c0624c4c8d3ed74e78ef56b80c4ac74bf32e9cdde7864cb27144be8fa6b",
+      "gasUsed": "823215",
+      "block": "64970515"
     },
     {
       "step": "job completed only through the correct hash",
@@ -70,5 +70,5 @@
       "detail": "status Completed"
     }
   ],
-  "jobId": "4"
+  "jobId": "5"
 }

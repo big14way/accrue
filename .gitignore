@@ -56,3 +56,6 @@ packages/evaluator/cre/.env
 
 # CRE compile artifacts
 packages/evaluator/cre/**/.cre_build_tmp.*
+
+# rendered videos (35 MB+), rebuild with docs/video/pipeline
+docs/video/out/
