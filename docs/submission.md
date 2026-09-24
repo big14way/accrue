@@ -76,9 +76,9 @@ All results are committed with transaction links in `docs/drill`:
 - **Attested, not proven:** that the endpoint returned this body at block N (CRE or committee, bound to the submitted hash); yield is whatever the vault returns.
 - **Not covered:** subjective quality (set a human evaluator address); credit risk is priced, not eliminated.
 
-## Traction, honestly
+## Traction
 
-48 jobs across two testnet deployments (43 on the first, 5 on the AUSD deployment). All of them are ours, run as drills that anyone can re-run, each step linked to its transaction. The path is marketplaces plugging in, not us posting jobs.
+48 jobs settled across two testnet deployments (43 on the first, 5 on the AUSD deployment): 20 of them funded and settled back to back in one run, one settled by a Chainlink CRE report, one by a provider agent and an evaluator daemon with no human in the loop. Every step is a re-runnable drill with its transaction linked. Next is marketplaces plugging in so the jobs are theirs, not ours.
 
 ## Revenue model
 
