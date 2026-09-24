@@ -31,7 +31,7 @@ LOGO_INV = P(B['logo_inverse']) if B.get('logo_inverse') else LOGO
 NAME, DOMAIN = B['name'], B.get('domain', '')
 VOICE, RATE = CFG.get('voice', 'en-US-AndrewMultilingualNeural'), CFG.get('voice_rate', '-4%')
 XFADE = CFG.get('crossfade', 0.5)
-LEAD = 0.5
+LEAD = 0.35
 SFX = {}
 
 def font(p, s): return ImageFont.truetype(p, s)
@@ -144,7 +144,7 @@ def draw_ecosystem(base, box):
     m2 = bx((374, 36, 674, 116), 'Compute marketplace', 'inference, batch jobs')
     a = bx((150, 250, 560, 360), 'Accrue on Monad', 'one escrow, one credit file, one verdict', accent=True)
     o1 = bx((36, 520, 236, 620), 'Yield', 'on every idle budget')
-    o2 = bx((256, 520, 456, 620), 'Credit', 'priced from ERC-8004')
+    o2 = bx((256, 520, 456, 620), 'Credit', 'priced on history')
     o3 = bx((476, 520, 674, 620), 'Reputation', 'written on chain')
     arrow(d, ((m1[0] + m1[2]) // 2, m1[3]), (a[0] + 90, a[1]), ACCENT_SOFT)
     arrow(d, ((m2[0] + m2[2]) // 2, m2[3]), (a[2] - 90, a[1]), ACCENT_SOFT)
@@ -195,17 +195,20 @@ def render_slide(sc):
     layers = []
     cols = sc.get('columns', 1); colw = (textw - (cols - 1) * (40 if visual else 60)) / cols
     fb = font(F_SEMI, (30 if cols > 1 else 34) if visual else (40 if cols == 1 else 36)); fk = font(F_DISPLAY, 24 if visual else 26)
-    rh = sc.get('row_h', 120)
-    if visual:  # row height follows the tallest wrapped bullet
-        lh = 42; tallest = 0
+    rh = sc.get('row_h', 120); tops = None
+    if visual:  # row height follows the wrapped text; single column stacks each bullet by its own height
+        lh = 42; heights = []
         for b in sc['bullets']:
             k, v = (b.get('k', ''), b['v']) if isinstance(b, dict) else ('', b)
-            tallest = max(tallest, (38 if k else 0) + lh * len(wrap(d, v, fb, colw - 40)))
-        rh = tallest + 22
+            heights.append((38 if k else 0) + lh * len(wrap(d, v, fb, colw - 40)) + 18)
+        rh = max(heights) + 4
+        if cols == 1:
+            tops = []; acc = 0
+            for hgt in heights: tops.append(acc); acc += hgt
     for i, b in enumerate(sc['bullets']):
         im = Image.new('RGBA', (W, H), (0, 0, 0, 0)); dd = ImageDraw.Draw(im)
         c, r = i % cols, i // cols
-        x = 120 + c * (colw + (40 if visual else 60)); yy = y + r * rh
+        x = 120 + c * (colw + (40 if visual else 60)); yy = y + (tops[i] if tops else r * rh)
         if isinstance(b, dict):
             k, v = b.get('k', ''), b['v']
         else: k, v = '', b
@@ -255,9 +258,13 @@ def tts(text, sid):
     h = hashlib.md5((VOICE + str(RATE) + str(TEMPO) + text).encode()).hexdigest()[:10]
     if 'Neural' in VOICE:
         path = os.path.join(OUT, f'{sid}_{h}.mp3')
-        if args.fresh or not os.path.exists(path):
-            run(['edge-tts', '--voice', VOICE, f'--rate={RATE}', '--text', text, '--write-media', path])
-        return path, dur_of(path)
+        for attempt in range(3):  # a build interrupted mid-synthesis leaves an empty or truncated file
+            if args.fresh or not os.path.exists(path) or os.path.getsize(path) < 1000:
+                if os.path.exists(path): os.remove(path)
+                run(['edge-tts', '--voice', VOICE, f'--rate={RATE}', '--text', text, '--write-media', path])
+            try: return path, dur_of(path)
+            except subprocess.CalledProcessError: os.remove(path)
+        sys.exit(f'narration for {sid} could not be synthesised')
     path = os.path.join(OUT, f'{sid}_{h}.wav')
     if args.fresh or not os.path.exists(path):
         aiff = path[:-4] + '.aiff'
@@ -278,13 +285,13 @@ def build_scene(sc):
     kind = sc['kind']
     if kind in ('title', 'end'):
         bg = os.path.join(OUT, sc['id'] + '_bg.png'); (render_title if kind == 'title' else render_end)(sc, bg)
-        dur = snap(vo_len + LEAD + sc.get('hold', 0.8 if kind == 'title' else 1.6))
+        dur = snap(vo_len + LEAD + sc.get('hold', 0.6 if kind == 'title' else 1.3))
         zoom = f"scale=iw*1.06:ih*1.06,zoompan=z='1.06-0.06*min(on/({dur}*{FPS})\\,1)':x='(iw-iw/zoom)/2':y='(ih-ih/zoom)/2':d=1:s={W}x{H}:fps={FPS}"
         enc(out, dur, img_in(bg, dur) + ['-i', vo], f"[0:v]{zoom},fade=t=in:st=0:d=0.6,trim=duration={dur},format=yuv420p[v]", audio_f(1, dur))
         return out, dur
     if kind == 'slide':
         base, layers = render_slide(sc)
-        dur = snap(vo_len + LEAD + sc.get('hold', 0.7))
+        dur = snap(vo_len + LEAD + sc.get('hold', 0.45))
         n = len(layers); span = max(dur - 2.5, 1.0)
         starts = [0.9 + i * min(1.6, span / max(n, 1)) for i in range(n)]
         inputs = img_in(base, dur)
@@ -306,7 +313,7 @@ def build_scene(sc):
     cuts = sc['cut'] if isinstance(sc['cut'][0], (list, tuple)) else [sc['cut']]
     clip_len = sum(b - a for a, b in cuts)
     speed = max(1.0, min(sc.get('max_speed', 1.5), clip_len / (vo_len + 1.2)))
-    dur = snap(max(clip_len / speed, vo_len + LEAD + 0.5))
+    dur = snap(max(clip_len / speed, vo_len + LEAD + 0.35))
     wide = sc.get('layout') == 'wide'
     dh = sc.get('device_h', 740 if wide else 940)
     if wide: render_caption_wide(cap, sc.get('step', ''), sc['head'], sc['sub'])
