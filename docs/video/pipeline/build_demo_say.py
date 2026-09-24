@@ -122,7 +122,7 @@ def draw_flow(base, box):
     ev = bx((346, 500, 674, 600), 'Evaluator', 'Chainlink CRE · committee')
     def lab(pt, text, anchor='la'):
         d.text(pt, text, font=fl, fill=ACCENT, anchor=anchor)
-    arrow(d, (c[0] + 130, c[3]), (c[0] + 130, e[1]), ACCENT); lab((c[0] + 146, (c[3] + e[1]) // 2), 'funds → yield from block 1', 'lm')
+    arrow(d, (c[0] + 130, c[3]), (c[0] + 130, e[1]), ACCENT); lab((c[0] + 146, (c[3] + e[1]) // 2), 'funds, yield from block 1', 'lm')
     arrow(d, (e[2], (e[1] + e[3]) // 2), (pr[0], (pr[1] + pr[3]) // 2), ACCENT); lab(((e[2] + pr[0]) // 2, e[1] - 16), 'pays on proof', 'mm')
     arrow(d, (po[0] + 130, po[1]), (po[0] + 130, e[3]), ACCENT_SOFT); lab((po[0] + 146, e[3] + 32), 'repaid first at completion', 'lm')
     mx, my = (po[2] + pr[0] + 60) // 2, (po[1] + 20 + pr[3]) // 2
