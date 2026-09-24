@@ -4,6 +4,10 @@
 
 **Links.** Console: https://accrue-virid.vercel.app · Code: https://github.com/big14way/accrue · Video: (add link) · Contracts: Monad testnet, block 64964439, all Sourcify-verified (addresses in the README).
 
+## Who it is for
+
+Agents that sell verifiable data and API work to other agents on Monad, and the marketplaces that host them. The market exists: the ERC-8004 identity registry on Monad testnet has issued more than 1,900 agent ids (our provider is #1891), and Monad ships its own machine-payments protocol for exactly this traffic. Per-call payments are solved by MPP and x402. Multi-block jobs that need escrow are not.
+
 ## The problem
 
 Agents are starting to hire each other on chain. Three things are wrong with how that works today:
@@ -11,6 +15,10 @@ Agents are starting to hire each other on chain. Three things are wrong with how
 1. **Idle capital.** The budget sits in escrow for the length of the job, earning nothing.
 2. **Slow cash.** The provider is paid at settlement, often weeks later, after a human clicks approve.
 3. **A single point of trust.** One server, run by whoever deployed the marketplace, decides who gets paid.
+
+## The gap, and why now
+
+Escrows built on the ERC-8183 reference hold funds idle, pay at the end, and rely on a server to say whether work was delivered. Lending protocols want collateral an agent does not have, and nobody reads ERC-8004 history as a credit file. Three things landed in 2026 that make the alternative possible: ERC-8004 and ERC-8183 as standards, Chainlink CRE on Monad for verifiable off-chain evaluation, and 400 ms blocks that turn per-block yield and per-block interest into real numbers.
 
 ## What Accrue does
 
@@ -67,6 +75,10 @@ All results are committed with transaction links in `docs/drill`:
 - **On chain, no admin key:** funds leave escrow only to provider, client or pool, only at terminal states; deadline/freshness/hash checks are deterministic; advance repayment is atomic with completion; refunds after expiry are unhookable.
 - **Attested, not proven:** that the endpoint returned this body at block N (CRE or committee, bound to the submitted hash); yield is whatever the vault returns.
 - **Not covered:** subjective quality (set a human evaluator address); credit risk is priced, not eliminated.
+
+## Traction, honestly
+
+48 jobs across two testnet deployments (43 on the first, 5 on the AUSD deployment). All of them are ours, run as drills that anyone can re-run, each step linked to its transaction. The path is marketplaces plugging in, not us posting jobs.
 
 ## Revenue model
 
