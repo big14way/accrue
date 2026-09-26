@@ -16,3 +16,7 @@ Everything here is reproducible from the repo and the live deployment; no screen
 
 Stills of the Monad explorer and the Envio Cloud dashboard were captured from a logged-in Chrome and
 turned into 9 s slow-zoom clips (`ffmpeg -loop 1 … zoompan`).
+
+The same pipeline is packaged as a global, project-agnostic skill at `~/.claude/skills/pitch-video`
+(data-driven scenes file, generic diagrams, references with the lessons). Prefer that for new projects;
+this folder is the Accrue-specific snapshot that produced the submitted cut.
