@@ -78,7 +78,7 @@ All results are committed with transaction links in `docs/drill`:
 
 ## Traction
 
-48 jobs settled across two testnet deployments (43 on the first, 5 on the AUSD deployment): 20 of them funded and settled back to back in one run, one settled by a Chainlink CRE report, one by a provider agent and an evaluator daemon with no human in the loop. Every step is a re-runnable drill with its transaction linked. Next is marketplaces plugging in so the jobs are theirs, not ours.
+53 jobs posted across two testnet deployments (43 on the first, 10 on the AUSD deployment) and 50 settled: 20 of them funded and settled back to back in one run, one settled by a Chainlink CRE report, and job #9 posted and funded by a client signed in to the console, advanced against by the provider, delivered by the provider agent and settled by the evaluator daemon with no human in the loop. Every step is a re-runnable drill with its transaction linked. Next is marketplaces plugging in so the jobs are theirs, not ours.
 
 ## Revenue model
 

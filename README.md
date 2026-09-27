@@ -116,7 +116,7 @@ Every drill is a script in `packages/drill`; results are committed in [docs/dril
 | [Live agents](docs/drill/live-agents.md) | PASS | The provider **agent** quotes and delivers, the evaluator **daemon** re-fetches, verifies and settles. No human in the loop |
 | [Chainlink CRE](docs/drill/cre-attestation.md) | PASS | Job #20 settled by a **CRE workflow report** delivered through the Monad Keystone forwarder into `Evaluator.onReport` |
 
-D1–D4 ran on the AUSD deployment below. D5, D6, the live agent run and the CRE settlement ran on the first testnet deployment (test dollar; addresses in [docs/deployments/monad-testnet-tusd.json](docs/deployments/monad-testnet-tusd.json)) and their links point there. 48 jobs have settled across the two deployments. 99 Foundry tests cover the contracts, including fuzz and invariant tests over random job and pool lifecycles.
+D1–D4 ran on the AUSD deployment below. D5, D6, the live agent run and the CRE settlement ran on the first testnet deployment (test dollar; addresses in [docs/deployments/monad-testnet-tusd.json](docs/deployments/monad-testnet-tusd.json)) and their links point there. 53 jobs have been posted across the two deployments and 50 have settled, including job #9 posted, funded, advanced against and settled entirely through the console and the agents. 99 Foundry tests cover the contracts, including fuzz and invariant tests over random job and pool lifecycles.
 
 ## Deployments
 
