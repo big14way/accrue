@@ -2,7 +2,7 @@
 
 **One line.** Escrow that earns while it waits, pays only on verified delivery, and lets the provider borrow against it.
 
-**Links.** Console: https://accrue-virid.vercel.app · Code: https://github.com/big14way/accrue · Demo video, 3 min: (add link) · Pitch video, 2 min: (add link) · Contracts: Monad testnet, block 64964439, all Sourcify-verified (addresses in the README).
+**Links.** Console: https://accruefi.vercel.app · Code: https://github.com/big14way/accrue · Demo video, 3 min: (add link) · Pitch video, 2 min: (add link) · Contracts: Monad testnet, block 64964439, all Sourcify-verified (addresses in the README).
 
 ## Who it is for
 

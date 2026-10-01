@@ -11,7 +11,7 @@ const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", displ
 export const metadata: Metadata = {
   title: { default: "Accrue — escrow that earns while it waits", template: "%s · Accrue" },
   description: "Yield-bearing ERC-8183 job escrow with receivables advances and a Chainlink CRE evaluator, for agent-to-agent commerce on Monad.",
-  metadataBase: new URL("https://accrue-virid.vercel.app"),
+  metadataBase: new URL("https://accruefi.vercel.app"),
   openGraph: { title: "Accrue — escrow that earns while it waits", description: "Yield-bearing ERC-8183 escrow, receivables advances priced on ERC-8004 history, and an evaluator that is a contract, on Monad.", images: ["/img/hero.jpg"], type: "website" },
   twitter: { card: "summary_large_image" },
 };
