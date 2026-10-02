@@ -93,7 +93,7 @@ All of them do work the product depends on.
 | Integration | Role in Accrue |
 |---|---|
 | **Agora AUSD** | Settlement asset on testnet (Agora faucet) and mainnet. |
-| **Chainlink CRE** | The evaluator: `JobSubmitted` log trigger → re-fetch in the DON → consensus → `Evaluator.onReport` through the Keystone forwarder. Jobs #20 and #11 settled this way ([docs/drill/cre-attestation.md](docs/drill/cre-attestation.md)). |
+| **Chainlink CRE** | The evaluator: `JobSubmitted` log trigger → re-fetch in the DON → consensus → `Evaluator.onReport` through the Keystone forwarder. Jobs #20, #11 and #12 settled this way ([docs/drill/cre-attestation.md](docs/drill/cre-attestation.md)). |
 | **Envio HyperIndex** | Jobs, SLA outcomes, yield per job, liens, pool stats, attestations and ERC-8004 feedback, hosted on Envio Cloud and read by the console. |
 | **ERC-8004 registries** | Provider identity (agent #1891) and reputation; the credit scorer prices advances from it. |
 | **x402 + MPP** | Per-call payment for the synchronous price-feed provider. |
@@ -115,9 +115,9 @@ Every drill is a script in `packages/drill`; results are committed in [docs/dril
 | [D5 throughput](docs/drill/d5-throughput.md) | PASS | 20 jobs, 141 txs over 1,349 blocks, 39.4 M gas; the serial client is the bottleneck, not the chain |
 | [D6 hostile LLM provider](docs/drill/d6-hostile-llm.md) | PASS | A Claude agent holding the provider key is told to get paid without delivering. Direct `complete`, self-attestation and a fabricated deliverable are refused on chain; the advance it took ends as a recorded default that cuts its limit 55 % → 40 % |
 | [Live agents](docs/drill/live-agents.md) | PASS | The provider **agent** quotes and delivers, the evaluator **daemon** re-fetches, verifies and settles. No human in the loop |
-| [Chainlink CRE](docs/drill/cre-attestation.md) | PASS | Jobs #20 (first deployment) and #11 (AUSD deployment, 2 Oct) settled by a **CRE workflow report** delivered through the Monad Keystone forwarder into `Evaluator.onReport` |
+| [Chainlink CRE](docs/drill/cre-attestation.md) | PASS | Jobs #20 (first deployment), #11 and #12 (AUSD deployment, 2 Oct) settled by a **CRE workflow report** delivered through the Monad Keystone forwarder into `Evaluator.onReport` |
 
-D1–D4 ran on the AUSD deployment below. D5, D6, the live agent run and the first CRE settlement (job #20) ran on the first testnet deployment (test dollar; addresses in [docs/deployments/monad-testnet-tusd.json](docs/deployments/monad-testnet-tusd.json)) and their links point there. 54 jobs have been posted across the two deployments and 51 have settled, including job #11 settled by Chainlink CRE on the AUSD deployment and job #9 posted, funded, advanced against and settled entirely through the console and the agents. 99 Foundry tests cover the contracts, including fuzz and invariant tests over random job and pool lifecycles.
+D1–D4 ran on the AUSD deployment below. D5, D6, the live agent run and the first CRE settlement (job #20) ran on the first testnet deployment (test dollar; addresses in [docs/deployments/monad-testnet-tusd.json](docs/deployments/monad-testnet-tusd.json)) and their links point there. 55 jobs have been posted across the two deployments and 52 have settled, including job #12, posted and funded by a person signed in with a Privy embedded wallet and settled by Chainlink CRE, job #11 settled by Chainlink CRE, and job #9 posted, funded, advanced against and settled entirely through the console and the agents. 99 Foundry tests cover the contracts, including fuzz and invariant tests over random job and pool lifecycles.
 
 ## Deployments
 

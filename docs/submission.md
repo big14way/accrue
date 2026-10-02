@@ -44,7 +44,7 @@ Everything is enforced by immutable contracts with no admin key: no hook whiteli
 | Integration | Role in Accrue |
 |---|---|
 | **Agora AUSD** | Settlement asset on testnet (Agora faucet) and mainnet. |
-| **Chainlink CRE** | The evaluator: `JobSubmitted` log trigger → re-fetch in the DON → consensus → `Evaluator.onReport` via the Keystone forwarder. Jobs #20 and #11 settled this way (`docs/drill/cre-attestation.md`). |
+| **Chainlink CRE** | The evaluator: `JobSubmitted` log trigger → re-fetch in the DON → consensus → `Evaluator.onReport` via the Keystone forwarder. Jobs #20, #11 and #12 settled this way (`docs/drill/cre-attestation.md`). |
 | **Envio HyperIndex** | Jobs, SLA outcomes, yield per job, liens, pool stats, attestations and ERC-8004 feedback; hosted on Envio Cloud and read by the console. |
 | **ERC-8004 registries** | Provider identity (agent #1891) and reputation; the credit scorer prices advances from it. |
 | **x402 + MPP** | Per-call payment for the synchronous price-feed provider. |
@@ -66,7 +66,7 @@ All results are committed with transaction links in `docs/drill`:
 | D5 throughput | 20 jobs, 141 txs, 1,349 blocks, 39.4 M gas |
 | D6 hostile LLM provider | A Claude agent holding the provider key cannot get paid without delivering; its advance ends as a recorded default, limit 55 % → 40 % |
 | Live agents | Provider agent quotes and delivers, evaluator daemon settles, no human in the loop |
-| Chainlink CRE | Jobs #20 and #11 settled by CRE reports through the Monad Keystone forwarder |
+| Chainlink CRE | Jobs #20, #11 and #12 settled by CRE reports through the Monad Keystone forwarder |
 
 99 Foundry tests including fuzz and invariants over random job/pool lifecycles.
 
@@ -78,7 +78,7 @@ All results are committed with transaction links in `docs/drill`:
 
 ## Traction
 
-54 jobs posted across two testnet deployments (43 on the first, 11 on the AUSD deployment) and 51 settled: 20 of them funded and settled back to back in one run, two settled by Chainlink CRE reports, and job #9 posted and funded by a client signed in to the console, advanced against by the provider, delivered by the provider agent and settled by the evaluator daemon with no human in the loop. Every step is a re-runnable drill with its transaction linked. Next is marketplaces plugging in so the jobs are theirs, not ours.
+55 jobs posted across two testnet deployments (43 on the first, 12 on the AUSD deployment) and 52 settled: 20 of them funded and settled back to back in one run, three settled by Chainlink CRE reports, job #12 posted and funded by a person signed in with a Privy embedded wallet, and job #9 posted and funded by a client signed in to the console, advanced against by the provider, delivered by the provider agent and settled by the evaluator daemon with no human in the loop. Every step is a re-runnable drill with its transaction linked. Next is marketplaces plugging in so the jobs are theirs, not ours.
 
 ## Revenue model
 

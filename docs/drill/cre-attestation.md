@@ -52,3 +52,15 @@ cre workflow simulate accrue-evaluator --target staging-settings --trigger-index
   --evm-tx-hash 0xd9b170593f0666f0288ba6f1ec82cc5864bdccc0fcf7ce3daf14411563717ac0 --evm-event-index 1 \
   --non-interactive --broadcast -e .env   # CRE_ETH_PRIVATE_KEY
 ```
+
+## Third run: job #12, posted from a Privy wallet (2 Oct 2026)
+
+A person signed in to the live console with Privy (embedded wallet `0xE1bF30CD95a81305e99af707F6cE944A6296e26d`) posted job **#12**
+(create, yield policy, terms: [`0x04cc1efc…cda6`](https://testnet.monadexplorer.com/tx/0x04cc1efc1442abb87a80d30396b21801fa905e779400d73d5a08b3c69d60cda6),
+[`0xc6829137…b1ce`](https://testnet.monadexplorer.com/tx/0xc68291371ecec627277bf53b9c9d4b67b0943852a02988ddacbf0e1cfd07b1ce),
+[`0xb83e975f…d3d0`](https://testnet.monadexplorer.com/tx/0xb83e975f8ae894a9709f10d61a89a83f75e13ab893502b7ea087715c6c09d3d0)).
+The provider agent quoted 50 AUSD ([`0x58bdbba9…ede8`](https://testnet.monadexplorer.com/tx/0x58bdbba94a57e7216f0718f052a4ea4a1ac57564d55af32aa50bc4c23011ede8)),
+the Privy wallet funded it ([`0x8ed4e9ec…3bd5`](https://testnet.monadexplorer.com/tx/0x8ed4e9ec351a496cbbc3e3f21503b97660f63c090e7b8fdc0678f97c2aa93bd5)),
+the agent delivered ([`0xeb8cd95e…9da6`](https://testnet.monadexplorer.com/tx/0xeb8cd95e6bf9379cad7d2c3ada21f4dc51174a31f3bc58d4f69c6f8be6bd9da6)),
+and the workflow verified the body (`cre:verified`) and settled it with report
+[`0x516133bf…e2b3`](https://testnet.monadexplorer.com/tx/0x516133bf5e41af7418cfd2c7efd0e6ce0522a2e6e85eb85a7dda7df5ec64e2b3).
