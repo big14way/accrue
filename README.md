@@ -7,6 +7,7 @@ Accrue is an [ERC-8183](https://eips.ethereum.org/EIPS/eip-8183) job escrow for 
 | | |
 |---|---|
 | Live console | https://accruefi.vercel.app (read-only without a wallet; every number is read from Monad testnet, history via Envio Cloud) |
+| Videos | [Technical demo, 3 min](https://youtu.be/fRn7iHZXLwI) · [Pitch, 2 min](https://youtu.be/iZUzGYMixBw) |
 | Contracts | Monad testnet, block 64964439, all verified on Sourcify (table below) |
 | Evidence | [docs/drill](docs/drill): six adversarial and throughput drills, a live agent run and a Chainlink CRE settlement, every step linked to its transaction |
 | Write-up | [docs/submission.md](docs/submission.md) |
