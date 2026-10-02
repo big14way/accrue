@@ -26,3 +26,29 @@ cre workflow simulate packages/evaluator/cre/accrue-evaluator -R packages/evalua
 Lesson recorded: the forwarder swallows receiver reverts, so the report's `gasLimit` must cover the
 whole settlement (hooks, vault redeem, pool repayment); 2,000,000 is now the staging default.
 Production deployment of the workflow needs CRE Early Access (`cre account access`).
+
+## Second run: job #11 on the AUSD deployment (2 Oct 2026)
+
+The workflow config (`config.staging.json`) now points at the AUSD deployment. Job **#11** (100 AUSD, provider
+agent #1891) was posted and funded by the client, quoted and delivered by the provider agent, and settled by a CRE
+report. The evaluator daemon was not running, so nothing else could settle it.
+
+| Step | Transaction |
+|---|---|
+| Client posts the job (create, terms, yield policy) | [`0x0b0cf8fb…20e8`](https://testnet.monadexplorer.com/tx/0x0b0cf8fb20667132c1878cd61f73b5d92f813b07ab6851095e027d11a64720e8) |
+| Provider agent quotes 100 AUSD | [`0x2bbbe104…d66c`](https://testnet.monadexplorer.com/tx/0x2bbbe104c23cf9181d9caf43cdefeb395312aaf855f2076d2834848f0ff8d66c) |
+| Client funds, budget into the vault | [`0xa06a9365…9c27`](https://testnet.monadexplorer.com/tx/0xa06a93658b23c499b359def9cd9a37ced1b2a83a5a7764882015056ef22f9c27) |
+| Provider agent submits deliverable `0xb5b4f6ea…7213` | [`0xd9b17059…ac0`](https://testnet.monadexplorer.com/tx/0xd9b170593f0666f0288ba6f1ec82cc5864bdccc0fcf7ce3daf14411563717ac0) |
+| CRE `writeReport` through the forwarder, `Evaluator.onReport`, job **Completed** | [`0xa5bdb5c8…8eb7`](https://testnet.monadexplorer.com/tx/0xa5bdb5c8d0eede1902f04050ded42a016eaf7ede12a40cae1fe7484267418eb7) |
+
+Workflow log: `JobSubmitted #11 deliverable 0xb5b4f6ea…7213`, then `fetched 0xb5b4f6ea…7213 vs submitted 0xb5b4f6ea…7213 → cre:verified`,
+then `writeReport 0xa5bdb5c8…8eb7`. Envio indexed the attestation with `source=CRE`.
+
+Command (CRE CLI v1.35.0 resolves the workflow path relative to the CRE project folder):
+
+```
+cd packages/evaluator/cre
+cre workflow simulate accrue-evaluator --target staging-settings --trigger-index 0 \
+  --evm-tx-hash 0xd9b170593f0666f0288ba6f1ec82cc5864bdccc0fcf7ce3daf14411563717ac0 --evm-event-index 1 \
+  --non-interactive --broadcast -e .env   # CRE_ETH_PRIVATE_KEY
+```
